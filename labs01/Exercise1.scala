@@ -2,7 +2,7 @@ object Bank1 {
   case class Acc(checking : BigInt, savings : BigInt)
 
   def putAside(x: BigInt, a: Acc): Acc = {
-    require (notRed(a) && a.checking >= x)
+    require (notRed(a) && a.checking >= x && x >= 0)
     Acc(a.checking - x, a.savings + x)
   } ensuring {
     r => notRed(r) && sameTotal(a, r)

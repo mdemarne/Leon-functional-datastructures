@@ -20,7 +20,7 @@ object PropositionalLogic {
     case Literal(_) => formula
   }) ensuring(isNNF(_))
 
-  def isNNF(f: Formula): Boolean = f match {
+  def isNNF(f: Formula): Boolean = f match { // DONE
     case Not(Literal(_)) => true
     case Literal(_) => true
     case And(lhs, rhs) => isNNF(lhs) && isNNF(rhs)

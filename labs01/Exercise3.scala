@@ -8,7 +8,7 @@ object ListWithSize {
         case Cons(h, t) => 1 + t.size
         case Nil() => 0
       }
-    } ensuring (_ >= 0)
+    } ensuring (_ >= 0) // DONE
 
     def sizeTailRec: BigInt = sizeTailRec0(0)
 
@@ -18,11 +18,11 @@ object ListWithSize {
         case Cons(h, t) => t.sizeTailRec0(acc + 1)
         case Nil() => acc
       }
-    } ensuring(_ == this.size + acc)
+    } ensuring(_ == this.size + acc) // DONE
 
     // Verify
     def zip[U](that: List[U]): List[(T, U)] = {
-      require(this.size == that.size)
+      require(this.size == that.size) // DONE
       this match {
         case Nil() => Nil()
         case Cons(h1, t1) => that match {
@@ -46,7 +46,7 @@ object ListWithSize {
     def reverse0(acc: List[T]): List[T] = (this match {
       case Nil() => acc
       case Cons(h, t) => t.reverse0(Cons(h, acc))
-    }) ensuring(_.content == acc.content ++ this.content)
+    }) ensuring(_.content == acc.content ++ this.content) // DONE
 
 
     def append(that: List[T]): List[T] = (this match {
@@ -73,7 +73,7 @@ object ListWithSize {
   def drunk[T](l: List[T]): List[T] = (l match {
     case Nil() => Nil()
     case Cons(x,l1) => Cons(x,Cons(x,drunk(l1)))
-  }) ensuring (_.size == l.size * 2)
+  }) ensuring (_.size == l.size * 2) // DONE
 
 
   def funnyCons[T](x: T, l: List[T]): List[T] = (l match {
@@ -88,7 +88,7 @@ object ListWithSize {
   }.holds
 
   @induct
-  def appendAssoc[T](xs: List[T], ys: List[T], zs: List[T]) : Boolean = {
+  def appendAssoc[T](xs: List[T], ys: List[T], zs: List[T]) : Boolean = { // DONE
     val apd1 = xs.append(ys).append(zs)
     val apd2 = xs.append(ys.append(zs))
     apd1 == apd2

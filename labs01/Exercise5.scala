@@ -29,9 +29,9 @@ object SearchList {
             p
           }
       }
-    } ensuring {
-     res => false // TODO: Ensure that if (and only if) res is non-negative, the list contains v.
-
+    } ensuring { res => // DONE
+      if (res < 0) !this.contains(v)
+      else this.contains(v)
     }
 
     def take(n: BigInt): List[T] = {
@@ -62,6 +62,26 @@ object SearchList {
   @induct
   def wtf[T](l: List[T], v: T): Boolean = {
     !((l.contains(v)) && (l.take(l.firstPosOf(v)).contains(v))) // What is this function checking? Translate to english. Can you remove the l.contains(v) part? Why?
+    /* We can take the following steps:
+     * 1. !((l.contains(v)) && (l.take(l.firstPosOf(v)).contains(v))) ( or !(P and Q) )
+     * 2. !(l.contains(v)) || !(l.take(l.firstPosOf(v)).contains(v)) ( or (not(P) or not(Q))
+     * 3. We can the say that either:
+     *  1. l does not contains v or
+     *  2. we find the first position of v in l and return false if the sub-list from the beginning of l to the position of v contains v, true o/w.
+     * However, they are not equivalent. Consider the following :
+     *          l	 := 	Cons[T](T#1, Nil[T]())
+     *          v	 := 	T#1
+     *  Then !(l.contains(v)) would return false, but the firstPosOf(v) in l is 0, which is passed to take. Take therefore returns Nil(), and
+     *  !(Nil.contains(v)) returns true. We can check that using the following def, which returns
+     */
   }.holds
+
+  @induct
+  def counterExample: Boolean = {
+    val l = Cons(1, Nil())
+    val v = 1
+    !(l.contains(v)) != !(l.take(l.firstPosOf(v)).contains(v))
+  }.holds
+  
 }
 

@@ -80,12 +80,5 @@ object SearchList {
      */
   }.holds
 
-  @induct
-  def counterExample: Boolean = {
-    val l = Cons(1, Nil())
-    val v = 1
-    !(l.contains(v)) != !(l.take(l.firstPosOf(v)).contains(v))
-  }.holds
-
 }
 

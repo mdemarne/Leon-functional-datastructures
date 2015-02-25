@@ -30,8 +30,8 @@ object SearchList {
           }
       }
     } ensuring { res => // DONE
-      if (res < 0) !this.contains(v)
-      else this.contains(v)
+      if (res >= 0) this.contains(v)
+      else !this.contains(v)
     }
 
     def take(n: BigInt): List[T] = {
@@ -61,18 +61,22 @@ object SearchList {
 
   @induct
   def wtf[T](l: List[T], v: T): Boolean = {
-    !((l.contains(v)) && (l.take(l.firstPosOf(v)).contains(v))) // What is this function checking? Translate to english. Can you remove the l.contains(v) part? Why?
-    /* We can take the following steps:
-     * 1. !((l.contains(v)) && (l.take(l.firstPosOf(v)).contains(v))) ( or !(P and Q) )
-     * 2. !(l.contains(v)) || !(l.take(l.firstPosOf(v)).contains(v)) ( or (not(P) or not(Q))
-     * 3. We can the say that either:
-     *  1. l does not contains v or
-     *  2. we find the first position of v in l and return false if the sub-list from the beginning of l to the position of v contains v, true o/w.
-     * However, they are not equivalent. Consider the following :
-     *          l	 := 	Cons[T](T#1, Nil[T]())
-     *          v	 := 	T#1
-     *  Then !(l.contains(v)) would return false, but the firstPosOf(v) in l is 0, which is passed to take. Take therefore returns Nil(), and
-     *  !(Nil.contains(v)) returns true. We can check that using the following def, which returns
+    !((l.contains(v)) && (l.take(l.firstPosOf(v)).contains(v)))
+    // What is this function checking? Translate to english. Can you remove the l.contains(v) part? Why?
+
+    /* It verifies that firstPosOf returns, if v is in l:
+     *  - a position which is before the first v in l or;
+     *  - the first position of v in l.
+     *
+     * Removing l.contains(v) changes the meaning of the check as it breaks the requirement of take(). Below is an
+     * example:
+     *      l -> Cons[T](T#0, Nil[T]())
+     *      v -> T#1
+     * l.firstPosOf(v) return -1, but take has as requirement that n is greater or equal to 0.
+     *
+     * Having l.contains(v) in the formula enforces that we check firstPosOf only if v is in l. For instance, the
+     * example above would check.
+     *
      */
   }.holds
 
@@ -82,6 +86,6 @@ object SearchList {
     val v = 1
     !(l.contains(v)) != !(l.take(l.firstPosOf(v)).contains(v))
   }.holds
-  
+
 }
 

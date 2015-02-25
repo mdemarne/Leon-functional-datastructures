@@ -22,7 +22,7 @@ object ListWithSize {
 
     // Verify
     def zip[U](that: List[U]): List[(T, U)] = {
-      require(this.size == that.size) // DONE
+      require(this.size <= that.size) // DONE
       this match {
         case Nil() => Nil()
         case Cons(h1, t1) => that match {
@@ -73,7 +73,8 @@ object ListWithSize {
   def drunk[T](l: List[T]): List[T] = (l match {
     case Nil() => Nil()
     case Cons(x,l1) => Cons(x,Cons(x,drunk(l1)))
-  }) ensuring (_.size == l.size * 2) // DONE
+
+  }) ensuring (res => res.size == l.size * 2 && res.content == l.content) // DONE
 
 
   def funnyCons[T](x: T, l: List[T]): List[T] = (l match {

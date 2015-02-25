@@ -40,14 +40,14 @@ object InsertionSort {
       require(isSorted)
       this match {
         case Nil() => Cons(e, Nil())
-        case Cons(h, t) => 
+        case Cons(h, t) =>
           if (h <= e) {
             Cons(h, t.insert(e))
           } else {
             Cons(e, this)
           }
       }
-    }
+    } ensuring { res => res.isSorted && res.size == this.size + 1 && res.content == this.content ++ Set(e)} // DONE
 
 
     /* Insertion sort yields a sorted list of same size and content as the input
@@ -55,7 +55,7 @@ object InsertionSort {
     def sort: List = (this match {
       case Nil() => Nil()
       case Cons(h, t) => t.sort.insert(h)
-    }) ensuring(res => res.content == this.content 
+    }) ensuring(res => res.content == this.content
                     && res.isSorted
                     && res.size == this.size
     )

@@ -41,10 +41,17 @@ object Rationals {
   }
  
   def lemma1(a1: Q, a2: Q, b1: Q, b2: Q): Boolean = {
-    !(a1.isRational && a2.isRational&& b1.isRational && b2.isRational && a1.~(a2) && b1.~(b2)) || 
-      ((a1.+(b1)).~(a2.+(b2)) && 
-      (a1.-(b1)).~(a2.-(b2)) && 
-      (a1.*(b1)).~(a2.*(b2)) &&
-      (!(b1.nonZero && b2.nonZero) ||(a1./(b1)).~(a2./(b2))))
-  }.holds
+    require {
+      a1.isRational &&
+      a2.isRational &&
+      b1.isRational &&
+      b2.isRational &&
+      a1 ~ a2 && b1 ~ b2
+    }
+    val eq1 = (a1 + b1) ~ (a2 + b2)
+    val eq2 = (a1 - b1) ~ (a2 - b2)
+    val eq3 = (a1 * b1) ~ (a2 * b2)
+    val eq4 = !a2.nonZero || !b2.nonZero || ((a1 / b1) ~ (a2 / b2))
+    eq1 && eq2 && eq3 && eq4
+  }.holds  
 }

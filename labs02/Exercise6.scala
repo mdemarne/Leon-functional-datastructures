@@ -77,8 +77,8 @@ object BinaryTree {
           that match {
             case Empty => this
             case Node(lThat, vThat, rThat) if vThat == v => Node(l ++ lThat, v, r ++ rThat)
-            case Node(lThat, vThat, rThat) if vThat < v => Node((l ++ lThat) + vThat, v, r) ++ rThat
-            case Node(lThat, vThat, rThat) if v < vThat => Node(l, v, (r ++ rThat) + vThat) ++ lThat
+            case Node(lThat, vThat, rThat) if vThat < v => rThat ++ Node((l + vThat) ++ lThat, v, r)
+            case Node(lThat, vThat, rThat) if v < vThat => Node(l, v, (r + vThat) ++ rThat) ++ lThat
           }
       }
       /* The most beautiful version, saved for the records */

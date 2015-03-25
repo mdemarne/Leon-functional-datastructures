@@ -3,3 +3,5 @@
 *.iml
 *.swp
 **/target/*
+*.classpath
+*.project

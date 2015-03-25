@@ -9,39 +9,47 @@ import leon.collection._
  * @author Mathieu Demarne
  */
 
+
+// TODO: add more postconditions. Preconditions should be more or less fine.
 sealed abstract class Queue[T] {
+
+	/* Implementation */
 
 	def isEmpty: Boolean = this == Empty[T]()
 
-	def isDefined:Boolean = !this.isEmpty
+	def isDefined: Boolean = !this.isEmpty
 
 	def head: T = {
 		require(this.isDefined && this.hasFrontOrEmpty)
 		this match {
-			case Cons(f, r) => f.head
+			case QCons(f, r) => f.head
 		}
-	} // TODO: postcondition
+	}
 
 	def tail: Queue[T] = {
 		require(this.isDefined && this.hasFrontOrEmpty)
 		this match {
-			case Cons(Nil(), r) => Cons(r.reverse, Nil())
-			case Cons(f, r) => Cons(f.tail, r)
+			case QCons(Cons(e, Nil()), r) if r.isEmpty => Empty()
+			case QCons(Cons(e, Nil()), r) => QCons(r.reverse, Nil())
+			case QCons(Cons(e, es), r) => QCons(es, r)
 		}
-	} // TODO: postcondition
+	} ensuring (_.hasFrontOrEmpty)
 
-	def snoc(x: T): Queue[T] = this match {
-		case Empty() =>  Cons(x :: Nil(), Nil())
-		case Cons(f, r) => Cons(f, x :: r)
-	}  // TODO: postcondition
+	def snoc(x: T): Queue[T] = {
+		require(this.hasFrontOrEmpty)
+		this match {
+			case Empty() =>  QCons(x :: Nil(), Nil())
+			case QCons(f, r) => QCons(f, x :: r)
+		}
+	} ensuring (res => res.isDefined && res.hasFrontOrEmpty)
 
+	/* Invariants */
 
 	def hasFrontOrEmpty = this match {
 		case Empty() => true
-		case Cons(f, r) => !f.isEmpty
+		case QCons(f, r) => !f.isEmpty
 	}
-	
 }
 
-case class Cons[T](f : List[T], r: List[T]) extends Queue[T]
+case class QCons[T](f : List[T], r: List[T]) extends Queue[T]
 case class Empty[T]() extends Queue[T]

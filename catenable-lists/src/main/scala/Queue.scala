@@ -1,40 +1,47 @@
+import leon._
+import leon.lang._
+import leon.annotation._
+import leon.collection._
+
 /* 
  * Implementation of Queue based on "Purely Functionnal Data Structure, Okasaki, P15+" 
  * @author Maëlle Colussi
  * @author Mathieu Demarne
  */
 
-object Queue {
+sealed abstract class Queue[T] {
 
-	val empty = Queue(Nil, Nil)
+	def isEmpty: Boolean = this == Empty[T]()
 
-}
+	def isDefined:Boolean = !this.isEmpty
 
-case class Queue[T](f : List[T], r: List[T]) {
-
-	def isEmpty = f.isEmpty && r.isEmpty
-
-	/* TODO: use for invariant checking or remove ? */
-	def queueInv(f : List[T], r: List[T]): Queue[T] = f match {
-		case Nil => Queue(r.reverse, Nil)
-		case _ => Queue(f, r)
-	}
-
-	def head: T = f.head //put require non empty
-	
-	def tail: Queue[T] = { // put require non empty
-		f.tail match {
-			case Nil => Queue(r.reverse, Nil)
-			case xs => Queue(xs, r)
+	def head: T = {
+		require(this.isDefined && this.hasFrontOrEmpty)
+		this match {
+			case Cons(f, r) => f.head
 		}
+	} // TODO: postcondition
+
+	def tail: Queue[T] = {
+		require(this.isDefined && this.hasFrontOrEmpty)
+		this match {
+			case Cons(Nil(), r) => Cons(r.reverse, Nil())
+			case Cons(f, r) => Cons(f.tail, r)
+		}
+	} // TODO: postcondition
+
+	def snoc(x: T): Queue[T] = this match {
+		case Empty() =>  Cons(x :: Nil(), Nil())
+		case Cons(f, r) => Cons(f, x :: r)
+	}  // TODO: postcondition
+
+
+	def hasFrontOrEmpty = this match {
+		case Empty() => true
+		case Cons(f, r) => !f.isEmpty
 	}
 	
-	def snoc(x: T): Queue[T] = f match {
-		case Nil => Queue(x :: Nil, Nil)
-		case _ =>  Queue(f, x :: r)
-	}
-
-	//TODO : change to leon's lists
-	//TODO : invariant
 }
 
+case class Cons[T](f : List[T], r: List[T]) extends Queue[T]
+case class Empty[T]() extends Queue[T]

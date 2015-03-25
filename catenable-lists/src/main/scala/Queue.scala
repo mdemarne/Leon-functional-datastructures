@@ -19,6 +19,14 @@ sealed abstract class Queue[T] {
 
 	def isDefined: Boolean = !this.isEmpty
 
+	def size: BigInt = {
+		require(this.hasFrontOrEmpty)
+		this match {
+			case Empty() => 0
+			case QCons(f, r) => f.size + r.size
+		}
+	} ensuring(_ >= 0)
+
 	def head: T = {
 		require(this.isDefined && this.hasFrontOrEmpty)
 		this match {
@@ -33,7 +41,7 @@ sealed abstract class Queue[T] {
 			case QCons(Cons(e, Nil()), r) => QCons(r.reverse, Nil())
 			case QCons(Cons(e, es), r) => QCons(es, r)
 		}
-	} ensuring (_.hasFrontOrEmpty)
+	} ensuring (res => res.hasFrontOrEmpty && res.size + 1 == this.size)
 
 	def snoc(x: T): Queue[T] = {
 		require(this.hasFrontOrEmpty)
@@ -41,7 +49,7 @@ sealed abstract class Queue[T] {
 			case Empty() =>  QCons(x :: Nil(), Nil())
 			case QCons(f, r) => QCons(f, x :: r)
 		}
-	} ensuring (res => res.isDefined && res.hasFrontOrEmpty)
+	} ensuring (res => res.isDefined && res.hasFrontOrEmpty && res.size - 1 == this.size)
 
 	/* Invariants */
 

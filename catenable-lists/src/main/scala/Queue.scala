@@ -1,4 +1,11 @@
+/* 
+ * Implementation of Queue based on "Purely Functionnal Data Structure, Okasaki, P15+" 
+ * */
+
 case class Queue[T](f : List[T], r: List[T]){
+
+	def isEmpty = f.isEmpty && r.isEmpty
+
 	def queueInv(f : List[T], r: List[T]): Queue[T] = {
 		if (f.isEmpty) Queue(r.reverse, Nil)
 		else Queue(f, r)

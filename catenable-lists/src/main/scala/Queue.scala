@@ -15,14 +15,14 @@ sealed abstract class Queue[T] {
 
 	/* Implementation */
 
-	def isEmpty: Boolean = this == Empty[T]()
+	def isEmpty: Boolean = this == QEmpty[T]()
 
 	def isDefined: Boolean = !this.isEmpty
 
 	def size: BigInt = {
 		require(this.hasFrontOrEmpty)
 		this match {
-			case Empty() => 0
+			case QEmpty() => 0
 			case QCons(f, r) => f.size + r.size
 		}
 	} ensuring(_ >= 0)
@@ -37,7 +37,7 @@ sealed abstract class Queue[T] {
 	def tail: Queue[T] = {
 		require(this.isDefined && this.hasFrontOrEmpty)
 		this match {
-			case QCons(Cons(e, Nil()), r) if r.isEmpty => Empty()
+			case QCons(Cons(e, Nil()), r) if r.isEmpty => QEmpty()
 			case QCons(Cons(e, Nil()), r) => QCons(r.reverse, Nil())
 			case QCons(Cons(e, es), r) => QCons(es, r)
 		}
@@ -46,7 +46,7 @@ sealed abstract class Queue[T] {
 	def snoc(x: T): Queue[T] = {
 		require(this.hasFrontOrEmpty)
 		this match {
-			case Empty() =>  QCons(x :: Nil(), Nil())
+			case QEmpty() =>  QCons(x :: Nil(), Nil())
 			case QCons(f, r) => QCons(f, x :: r)
 		}
 	} ensuring (res => res.isDefined && res.hasFrontOrEmpty && res.size - 1 == this.size)
@@ -54,10 +54,10 @@ sealed abstract class Queue[T] {
 	/* Invariants */
 
 	def hasFrontOrEmpty = this match {
-		case Empty() => true
+		case QEmpty() => true
 		case QCons(f, r) => !f.isEmpty
 	}
 }
 
 case class QCons[T](f : List[T], r: List[T]) extends Queue[T]
-case class Empty[T]() extends Queue[T]
+case class QEmpty[T]() extends Queue[T]

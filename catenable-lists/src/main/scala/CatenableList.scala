@@ -11,22 +11,22 @@ import leon.collection._
 
 sealed abstract class CatenableList[T] {
 
-	def isEmpty: Boolean = this == Empty[T]()
+	def isEmpty: Boolean = this == CEmpty[T]()
 
 	def isDefined: Boolean = !this.isEmpty
 
 	def head: T = {
 		require(this.isDefined)
 		this match {
-			case Cons(h, t) => h
+			case CCons(h, t) => h
 		}
 	} // TODO: postcondition
 
 	def tail: CatenableList[T] = {
 		require(this.isDefined)
 		this match {
-			case Cons(h, t) if t.isEmpty => Empty()
-			case Cons(h, t) => linkAll(t)
+			case CCons(h, t) if t.isEmpty => CEmpty()
+			case CCons(h, t) => linkAll(t)
 		}
 	} // TODO: postcondition
 	
@@ -39,13 +39,13 @@ sealed abstract class CatenableList[T] {
 		}
 	}
 
-	def cons(x: T): CatenableList[T] = Cons(x, QEmpty[CatenableList[T]]) ++ this // TODO: postcondition
-	def snoc(x: T): CatenableList[T] = this ++ Cons(x, QEmpty[CatenableList[T]]) // TODO: postcondition
+	def cons(x: T): CatenableList[T] = CCons(x, QEmpty[CatenableList[T]]) ++ this // TODO: postcondition
+	def snoc(x: T): CatenableList[T] = this ++ CCons(x, QEmpty[CatenableList[T]]) // TODO: postcondition
 
 	def ++ (that: CatenableList[T]): CatenableList[T] = {
 		(this, that) match {
-			case (Empty(), _ ) => that
-			case (_, Empty()) => this
+			case (CEmpty(), _ ) => that
+			case (_, CEmpty()) => this
 			case _ => this.link(that)
 		}	
 	}  // TODO: postcondition
@@ -53,11 +53,11 @@ sealed abstract class CatenableList[T] {
 	def link(that: CatenableList[T]): CatenableList[T] = {
 		require(this.isDefined && that.isDefined)
 		this match {
-			case Cons(h, t) => Cons(h, t.snoc(that)) //TODO : p96 : "tree suspension"
+			case CCons(h, t) => CCons(h, t.snoc(that)) //TODO : p96 : "tree suspension"
 		}
 	}  // TODO: postcondition
 	
 }
 
-case class Cons[T](h: T, t: Queue[CatenableList[T]]) extends CatenableList[T]
-case class Empty[T]() extends CatenableList[T]
+case class CCons[T](h: T, t: Queue[CatenableList[T]]) extends CatenableList[T]
+case class CEmpty[T]() extends CatenableList[T]

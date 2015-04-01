@@ -17,7 +17,7 @@ sealed abstract class CatenableList[T] {
 
 	def content: Set[T] = this match {
 		case CEmpty() => Set()
-		case CCons(h, t) => Set(h) ++ (t.content).flatMap{_.content}
+		case CCons(h, t) => Set(h) ++ t.toList.flatMap(_.content.toList).content
 	}
 	
 	def size: BigInt = this match {

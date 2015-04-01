@@ -9,11 +9,9 @@ import leon.collection._
  * @author Mathieu Demarne
  */
 
-
-// TODO: add more postconditions. Preconditions should be more or less fine.
 sealed abstract class Queue[T] {
 
-	/* Implementation */
+	/* lower-level API */
 
 	def isEmpty: Boolean = this == QEmpty[T]()
 
@@ -57,7 +55,17 @@ sealed abstract class Queue[T] {
 	}) ensuring (res => res.size == this.size && res.size >= 0)
 
 
-	def content: Set[T] = this.toList.content
+	def content: Set[T] = (this match {
+		case QEmpty() => Set()
+		case QCons(f, r) => f.content ++ r.content
+	}) ensuring (res => res == this.toList.content)
+
+	/* Higher-order API */
+
+	def map[R](func: T => R): Queue[R] = (this match {
+		case QEmpty() => QEmpty()
+		case QCons(f, r) => QCons(f.map(func(_)), r.map(func(_)))
+	}) ensuring (_.size == this.size)
 
 	/* Invariants */
 

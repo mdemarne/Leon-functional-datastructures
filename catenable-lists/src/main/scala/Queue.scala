@@ -9,6 +9,15 @@ import leon.collection._
  * @author Mathieu Demarne
  */
 
+
+/* TODO: to define flatten, we need Queue concatenation. Not sure if it's the way to go ! */
+/*object QueueOps {
+	def flatten[T](que: Queue[Queue[T]]): Queue[T] = que match {
+		case QEmpty() => QEmpty()
+		case QCons(f, r) => QCons(f.foldLeft(QEmpty())((x,y) => y), ???)
+	}
+}*/
+
 sealed abstract class Queue[T] {
 
 	/* lower-level API */

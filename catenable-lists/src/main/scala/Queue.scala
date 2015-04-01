@@ -25,7 +25,7 @@ sealed abstract class Queue[T] {
 			case QEmpty() => 0
 			case QCons(f, r) => f.size + r.size
 		}
-	} ensuring(_ >= 0)
+	} ensuring (res => res == this.toList.size && res >= 0)
 
 	def head: T = {
 		require(this.isDefined && this.hasFrontOrEmpty)
@@ -50,6 +50,14 @@ sealed abstract class Queue[T] {
 			case QCons(f, r) => QCons(f, x :: r)
 		}
 	} ensuring (res => res.isDefined && res.hasFrontOrEmpty && res.size - 1 == this.size)
+
+	def toList: List[T] = (this match {
+		case QEmpty() => Nil()
+		case QCons(f, r) => f ++ r
+	}) ensuring (res => res.size == this.size && res.size >= 0)
+
+
+	def content: Set[T] = this.toList.content
 
 	/* Invariants */
 

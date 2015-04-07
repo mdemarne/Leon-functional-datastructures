@@ -23,10 +23,13 @@ sealed abstract class CatenableList[T] {
 	def isDefined: Boolean = !this.isEmpty
 	
 	// TODO: NOT OK
-	/*def size: BigInt = this match {
-		case CEmpty() => 0
-		case CCons(h, t) => 1 + t.size
-	}*/
+	def size: BigInt = {
+		require(this.hasProperShape)
+		this match {
+			case CEmpty() => 0
+			case CCons(h, t) => 1 + CatenableList.sumTail(t)
+	}
+} ensuring (_ >= 0) // TODO: more ?
 
 	def cons(x: T): CatenableList[T] = {
 		require(this.hasProperShape)
@@ -107,6 +110,16 @@ object CatenableList {
 			case qTail => q.head.link(linkAll(qTail))
 		}
 	} //ensuring(res => res.content == q.content && res.size == q.size) //TODO : more ? on structure
+
+	// TODO: NOT OK
+	// TODO: Some problem with preconditions to be checked, involving foldLeft.
+	def sumTail[T](q: Queue[CatenableList[T]]): BigInt = {
+		require(queueHasProperShapeIn(q))
+		q match {
+			case QEmpty() => 0
+			case QCons(f, r) => f.foldLeft(BigInt(0))((x, y) => x + y.size) + r.foldLeft(BigInt(0))((x, y) => x + y.size)
+		}
+	} ensuring(_ >= 0)
 
 	/* Invariants */
 

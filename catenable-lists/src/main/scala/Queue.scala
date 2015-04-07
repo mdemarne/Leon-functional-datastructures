@@ -10,11 +10,12 @@ import leon.collection._
  */
 
 
-/* TODO: to define flatten, we need Queue concatenation. Not sure if it's the way to go ! */
-/*object QueueOps {
+/* TODO: Not sure that defining flatten is the best solution
+object QueueOps {
 	def flatten[T](que: Queue[Queue[T]]): Queue[T] = que match {
+		require(que.hasProperShape && que.forall(_.hasProperShape))
 		case QEmpty() => QEmpty()
-		case QCons(f, r) => QCons(f.foldLeft(QEmpty())((x,y) => y), ???)
+		case QCons(f, r) => ???
 	}
 }*/
 
@@ -57,6 +58,20 @@ sealed abstract class Queue[T] {
 			case QCons(f, r) => QCons(f, x :: r)
 		}
 	} ensuring (res => res.isDefined && res.hasProperShape && res.size - 1 == this.size)
+
+	// TODO: check if required
+	def ++(that: Queue[T]): Queue[T] = {
+		require(this.hasProperShape && that.hasProperShape)
+		(this, that) match {
+			case (QEmpty(), _) => that
+			case (_, QEmpty()) => this
+			// TODO: might be worth doing the ++ in a lazy manner only, if possible. ++ takes time compared
+			// to other accesses in O(1) (snoc, head, tail, etc). Another possibility would be to implement
+			// those queues using QCons(List[T], List[List[T]]) for instance! But ++ might very well not be
+			// required.
+			case (QCons(f1, r1), QCons(f2, r2)) => QCons(f1, r1 ++ f2 ++ r2)
+		}
+	} ensuring(res => res.hasProperShape && res.size == this.size + that.size && res.content == this.content ++ that.content)
 
 	def toList: List[T] = (this match {
 		case QEmpty() => Nil()

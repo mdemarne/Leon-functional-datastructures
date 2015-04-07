@@ -9,8 +9,8 @@ import leon.collection._
  * @author Mathieu Demarne
  */
 
- // TODO: 1) verify and finish all structures
- // TODO: 2) add better checks, of course!
+ // DONE: 1) verify and finish all structures
+ // TODO: 2) add better checks and add external func (content, toList, etc.)!
 
 sealed abstract class CatenableList[T] {
 
@@ -21,19 +21,6 @@ sealed abstract class CatenableList[T] {
 
 	// OK
 	def isDefined: Boolean = !this.isEmpty
-
-	// TODO: NOT OK
-	/*def content: Set[T] = this match {
-		case CEmpty() => Set()
-		// TODO: change once we have (if we do) define flatMap on queues
-		case CCons(h, t) => Set(h) ++ t.toList.flatMap(_.toList).content
-	}*/
-
-	// TODO: NOT OK
-	/*def toList: List[T] = this match {
-		case CEmpty() => Nil()
-		case CCons(h, t) => h :: t.toList.flatMap(_.toList)
-	}*/
 	
 	// TODO: NOT OK
 	/*def size: BigInt = this match {
@@ -61,6 +48,7 @@ sealed abstract class CatenableList[T] {
 	} //ensuring(res => res.content == this.content ++ that.content && res.size == this.size + that.size) // TODO: more ?
 
 	def head: T = {
+
 		require(this.isDefined && this.hasProperShape)
 		this match {
 			case CCons(h, t) => h
@@ -75,6 +63,18 @@ sealed abstract class CatenableList[T] {
 			case CCons(h, t) => CatenableList.linkAll(t)
 		}
 	} //ensuring(res => res.content.forall{x => this.content.contains(x)} && res.size == this.size - 1) // TODO: more ? structure perhaps
+
+	// TODO: NOT OK
+	/*def content: Set[T] = this match {
+		case CEmpty() => Set()
+		case CCons(h, t) => Set(h) ++ t.content.flatMap(_.content) // TODO: check why flatMap does not exist on sets / Or someting of the sort...
+	}*/
+
+	// TODO: NOT OK
+	/*def toList: List[T] = this match {
+		case CEmpty() => Nil()
+		case CCons(h, t) => h :: t.toList.flatMap(_.toList) // TODO: check why this is not properly typed according to the compiler.
+	}*/
 
 	/* Helpers */
 

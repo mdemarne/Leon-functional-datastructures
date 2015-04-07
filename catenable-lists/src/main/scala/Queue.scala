@@ -20,7 +20,7 @@ import leon.collection._
 
 sealed abstract class Queue[T] {
 
-	/* lower-level API */
+	/* Lower-level API */
 
 	def isEmpty: Boolean = this == QEmpty[T]()
 

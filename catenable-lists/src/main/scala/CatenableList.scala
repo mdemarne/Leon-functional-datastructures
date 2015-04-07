@@ -41,21 +41,18 @@ sealed abstract class CatenableList[T] {
 		case CCons(h, t) => 1 + t.size
 	}*/
 
-	// OK
 	def cons(x: T): CatenableList[T] = {
-		require(this.hasProperTailOrEmpty)
+		require(this.hasProperShape)
 		CCons(x, QEmpty[CatenableList[T]]()) ++ this
 	} //ensuring(res => res.content == Set(x) ++ this.content && res.size == this.size + 1) // TODO: more ?
 
-	// OK
 	def snoc(x: T): CatenableList[T] = {
-		require(this.hasProperTailOrEmpty)
+		require(this.hasProperShape)
 		this ++ CCons(x, QEmpty[CatenableList[T]]()) 
 	} //ensuring(res => res.content == Set(x) ++ this.content && res.size == this.size + 1)// TODO: more ?
 
-	// OK
 	def ++ (that: CatenableList[T]): CatenableList[T] = {
-		require(this.hasProperTailOrEmpty && that.hasProperTailOrEmpty)
+		require(this.hasProperShape && that.hasProperShape)
 		(this, that) match {
 			case (CEmpty(), _) => that
 			case (_, CEmpty()) => this
@@ -63,18 +60,16 @@ sealed abstract class CatenableList[T] {
 		}	
 	} //ensuring(res => res.content == this.content ++ that.content && res.size == this.size + that.size) // TODO: more ?
 
-	// OK
 	def head: T = {
-		require(this.isDefined && this.hasProperTailOrEmpty)
+		require(this.isDefined && this.hasProperShape)
 		this match {
 			case CCons(h, t) => h
 		}
 	} //ensuring(res => this.content.contains(res)) //TODO: more ?
 
 
-	// OK
 	def tail: CatenableList[T] = {
-		require(this.isDefined && this.hasProperTailOrEmpty)
+		require(this.isDefined && this.hasProperShape)
 		this match {
 			case CCons(h, t) if t.isEmpty => CEmpty()
 			case CCons(h, t) => CatenableList.linkAll(t)
@@ -83,9 +78,8 @@ sealed abstract class CatenableList[T] {
 
 	/* Helpers */
 
-	// TODO: OK
 	private def link(that: CatenableList[T]): CatenableList[T] = {
-		require(this.isDefined && this.hasProperTailOrEmpty && that.isDefined && that.hasProperTailOrEmpty)
+		require(this.isDefined && this.hasProperShape && that.isDefined && that.hasProperShape)
 		this match {
 			case CCons(h, t) => CCons(h, t.snoc(that)) //TODO : p96 : "tree suspension"
 		}
@@ -93,12 +87,11 @@ sealed abstract class CatenableList[T] {
 
 	/* Invariants */
 
-	def hasProperTailOrEmpty = {
-		this match {
-			case CEmpty() => true
-			case CCons(h, t) => t.hasFrontOrEmpty
-		}
-	} // TODO
+	def hasProperShape = this match {
+		case CEmpty() => true
+		/* The queue must have proper shape according to queue specs, and we cannot have a queue of empty lists */
+		case CCons(h, t) => t.hasFrontOrEmpty && t.forall(_.isDefined)
+	}
 
 }
 
@@ -107,15 +100,17 @@ object CatenableList {
 
 	/* Helpers */
 
-	// OK
 	def linkAll[T](q: Queue[CatenableList[T]]): CatenableList[T] = { 
-		require(q.isDefined && q.hasFrontOrEmpty)
+		require(q.isDefined && q.hasFrontOrEmpty && queueContainsNoEmptyListIn(q))
 		q.tail match {
 			case QEmpty() => q.head
 			case qTail => q.head.link(linkAll(qTail))
 		}
 	} //ensuring(res => res.content == q.content && res.size == q.size) //TODO : more ? on structure
-	
+
+	/* Invariants */
+
+	def queueContainsNoEmptyListIn[T](q: Queue[CatenableList[T]]): Boolean = q.forall(_.isDefined)
 }
 
 case class CCons[T](h: T, t: Queue[CatenableList[T]]) extends CatenableList[T]

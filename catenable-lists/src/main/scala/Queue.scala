@@ -76,6 +76,11 @@ sealed abstract class Queue[T] {
 		case QCons(f, r) => QCons(f.map(func(_)), r.map(func(_)))
 	}) ensuring (_.size == this.size)
 
+	def forall(func: T => Boolean): Boolean = (this match {
+		case QEmpty() => true /* Default, as in Scala standards */
+		case QCons(f, r) => f.forall(func(_)) && r.forall(func(_))
+	})
+
 	/* Invariants */
 
 	def hasFrontOrEmpty = this match {

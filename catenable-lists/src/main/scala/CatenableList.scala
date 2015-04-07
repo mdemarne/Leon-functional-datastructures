@@ -90,7 +90,7 @@ sealed abstract class CatenableList[T] {
 	def hasProperShape = this match {
 		case CEmpty() => true
 		/* The queue must have proper shape according to queue specs, and we cannot have a queue of empty lists */
-		case CCons(h, t) => t.hasFrontOrEmpty && t.forall(_.isDefined)
+		case CCons(h, t) => CatenableList.queueHasProperShapeIn(t)
 	}
 
 }
@@ -101,7 +101,7 @@ object CatenableList {
 	/* Helpers */
 
 	def linkAll[T](q: Queue[CatenableList[T]]): CatenableList[T] = { 
-		require(q.isDefined && q.hasFrontOrEmpty && queueContainsNoEmptyListIn(q))
+		require(q.isDefined && queueHasProperShapeIn(q))
 		q.tail match {
 			case QEmpty() => q.head
 			case qTail => q.head.link(linkAll(qTail))
@@ -110,7 +110,9 @@ object CatenableList {
 
 	/* Invariants */
 
-	def queueContainsNoEmptyListIn[T](q: Queue[CatenableList[T]]): Boolean = q.forall(_.isDefined)
+	def queueHasProperShapeIn[T](q: Queue[CatenableList[T]]): Boolean = {
+		q.hasProperShape && q.forall(x => x.isDefined && x.hasProperShape)
+	}
 }
 
 case class CCons[T](h: T, t: Queue[CatenableList[T]]) extends CatenableList[T]

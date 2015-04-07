@@ -27,7 +27,7 @@ sealed abstract class Queue[T] {
 	def isDefined: Boolean = !this.isEmpty
 
 	def size: BigInt = {
-		require(this.hasFrontOrEmpty)
+		require(this.hasProperShape)
 		this match {
 			case QEmpty() => 0
 			case QCons(f, r) => f.size + r.size
@@ -35,28 +35,28 @@ sealed abstract class Queue[T] {
 	} ensuring (res => res == this.toList.size && res >= 0)
 
 	def head: T = {
-		require(this.isDefined && this.hasFrontOrEmpty)
+		require(this.isDefined && this.hasProperShape)
 		this match {
 			case QCons(f, r) => f.head
 		}
 	}
 
 	def tail: Queue[T] = {
-		require(this.isDefined && this.hasFrontOrEmpty)
+		require(this.isDefined && this.hasProperShape)
 		this match {
 			case QCons(Cons(e, Nil()), r) if r.isEmpty => QEmpty()
 			case QCons(Cons(e, Nil()), r) => QCons(r.reverse, Nil())
 			case QCons(Cons(e, es), r) => QCons(es, r)
 		}
-	} ensuring (res => res.hasFrontOrEmpty && res.size + 1 == this.size)
+	} ensuring (res => res.hasProperShape && res.size + 1 == this.size)
 
 	def snoc(x: T): Queue[T] = {
-		require(this.hasFrontOrEmpty)
+		require(this.hasProperShape)
 		this match {
 			case QEmpty() =>  QCons(x :: Nil(), Nil())
 			case QCons(f, r) => QCons(f, x :: r)
 		}
-	} ensuring (res => res.isDefined && res.hasFrontOrEmpty && res.size - 1 == this.size)
+	} ensuring (res => res.isDefined && res.hasProperShape && res.size - 1 == this.size)
 
 	def toList: List[T] = (this match {
 		case QEmpty() => Nil()
@@ -83,7 +83,7 @@ sealed abstract class Queue[T] {
 
 	/* Invariants */
 
-	def hasFrontOrEmpty = this match {
+	def hasProperShape = this match {
 		case QEmpty() => true
 		case QCons(f, r) => !f.isEmpty
 	}

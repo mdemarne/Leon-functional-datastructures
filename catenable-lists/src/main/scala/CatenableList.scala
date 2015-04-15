@@ -64,13 +64,12 @@ sealed abstract class CatenableList[T] {
 		}
 	} //ensuring(res => res.content.forall{x => this.content.contains(x)} && res.size == this.size - 1) // TODO: more ? structure perhaps
 
-	// TODO: NOT OK
 	def content: Set[T] = this match {
 		case CEmpty() => Set()
-		case CCons(h, t) => Set(h) ++ (t.toList.flatMap(_.toList)).content // TODO: check why flatMap does not exist on sets / Or someting of the sort...
+		case CCons(h, t) => Set(h) ++ (t.toList.flatMap(_.toList)).content // TODO: check why this is not properly typed according to the compiler.
 	}
 
-	// TODO: NOT OK
+
 	def toList: List[T] = this match {
 		case CEmpty() => Nil()
 		case CCons(h, t) => Cons(h, t.toList.flatMap(_.toList)) // TODO: check why this is not properly typed according to the compiler.

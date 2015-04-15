@@ -25,8 +25,8 @@ sealed abstract class CatenableList[T] {
 		this match {
 			case CEmpty() => 0
 			case CCons(h, t) => 1 + CatenableList.sumTail(t)
-	}
-} ensuring (_ >= 0) // TODO: more ?
+		}
+	} ensuring (_ >= 0) // TODO: more ?
 
 	def cons(x: T): CatenableList[T] = {
 		require(this.hasProperShape)
@@ -65,16 +65,16 @@ sealed abstract class CatenableList[T] {
 	} //ensuring(res => res.content.forall{x => this.content.contains(x)} && res.size == this.size - 1) // TODO: more ? structure perhaps
 
 	// TODO: NOT OK
-	/*def content: Set[T] = this match {
+	def content: Set[T] = this match {
 		case CEmpty() => Set()
-		case CCons(h, t) => Set(h) ++ t.content.flatMap(_.content) // TODO: check why flatMap does not exist on sets / Or someting of the sort...
-	}*/
+		case CCons(h, t) => Set(h) ++ (t.toList.flatMap(_.toList)).content // TODO: check why flatMap does not exist on sets / Or someting of the sort...
+	}
 
 	// TODO: NOT OK
-	/*def toList: List[T] = this match {
+	def toList: List[T] = this match {
 		case CEmpty() => Nil()
-		case CCons(h, t) => h :: t.toList.flatMap(_.toList) // TODO: check why this is not properly typed according to the compiler.
-	}*/
+		case CCons(h, t) => Cons(h, t.toList.flatMap(_.toList)) // TODO: check why this is not properly typed according to the compiler.
+	}
 
 	/* Helpers */
 

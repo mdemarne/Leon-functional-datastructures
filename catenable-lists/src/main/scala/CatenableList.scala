@@ -69,9 +69,12 @@ sealed abstract class CatenableList[T] {
 
 	def content: Set[T] = this match {
 		case CEmpty() => Set()
-		case CCons(h, t) => Set(h) ++ (t.toList.flatMap(_.toList)).content // TODO: check why this is not properly typed according to the compiler.
+		case CCons(h, t) =>
+			// TODO: remove the val once inlinine issue resolved
+			// Set(h) ++ (t.toList.flatMap(_.toList)).content
+			val st1 = (t.toList.flatMap(_.toList)).content
+			Set(h) ++ st1
 	}
-
 
 	def toList: List[T] = this match {
 		case CEmpty() => Nil()

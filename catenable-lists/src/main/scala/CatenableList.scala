@@ -11,6 +11,9 @@ import leon.collection._
 
  // DONE: 1) verify and finish all structures
  // TODO: 2) add better checks and add external func (content, toList, etc.)!
+ 
+ // TODO: comparisons of contents in ensuring makes java exception
+ // TODO: linkAll ensuring
 
 sealed abstract class CatenableList[T] {
 
@@ -31,12 +34,13 @@ sealed abstract class CatenableList[T] {
 	def cons(x: T): CatenableList[T] = {
 		require(this.hasProperShape)
 		CCons(x, QEmpty[CatenableList[T]]()) ++ this
-	} //ensuring(res => res.content == Set(x) ++ this.content && res.size == this.size + 1) // TODO: more ?
+	} ensuring(res => /*res.content == Set(x) ++ this.content &&*/ res.size == this.size + 1) // TODO: more ?
+
 
 	def snoc(x: T): CatenableList[T] = {
 		require(this.hasProperShape)
 		this ++ CCons(x, QEmpty[CatenableList[T]]())
-	} //ensuring(res => res.content == Set(x) ++ this.content && res.size == this.size + 1)// TODO: more ?
+	} ensuring(res => /*res.content == Set(x) ++ this.content &&*/ res.size == this.size + 1)// TODO: more ?
 
 	def ++(that: CatenableList[T]): CatenableList[T] = {
 		require(this.hasProperShape && that.hasProperShape)
@@ -45,10 +49,9 @@ sealed abstract class CatenableList[T] {
 			case (_, CEmpty()) => this
 			case _ => this.link(that)
 		}
-	} //ensuring(res => res.content == this.content ++ that.content && res.size == this.size + that.size) // TODO: more ?
+	} ensuring(res => /*res.content == this.content ++ that.content &&*/ res.size == this.size + that.size) // TODO: more ?
 
 	def head: T = {
-
 		require(this.isDefined && this.hasProperShape)
 		this match {
 			case CCons(h, t) => h
@@ -62,7 +65,7 @@ sealed abstract class CatenableList[T] {
 			case CCons(h, t) if t.isEmpty => CEmpty()
 			case CCons(h, t) => CatenableList.linkAll(t)
 		}
-	} //ensuring(res => res.content.forall{x => this.content.contains(x)} && res.size == this.size - 1) // TODO: more ? structure perhaps
+	} ensuring(res => /*res.toList.forall{x => this.content.contains(x)} &&*/ res.size == this.size - 1) // TODO: more ? structure perhaps
 
 	def content: Set[T] = this match {
 		case CEmpty() => Set()
@@ -82,7 +85,7 @@ sealed abstract class CatenableList[T] {
 		this match {
 			case CCons(h, t) => CCons(h, t.snoc(that)) //TODO : p96 : "tree suspension"
 		}
-	} //ensuring(res => res.content == this.content ++ that.content && res.size == this.size + that.size) // TODO: more ? on structure
+	} ensuring(res => /*res.content == this.content ++ that.content &&*/ res.size == this.size + that.size) // TODO: more ? on structure
 
 	/* Invariants */
 
@@ -105,17 +108,18 @@ object CatenableList {
 			case QEmpty() => q.head
 			case qTail => q.head.link(linkAll(qTail))
 		}
-	} //ensuring(res => res.content == q.content && res.size == q.size) //TODO : more ? on structure
+	} //ensuring(res => res.content == q.content && res.size == q.size) //TODO : more ? 
+		//problem q.content gives CatenableList, not T
 
-	// TODO: Some problem with preconditions to be checked, involving foldLeft.
 	def sumTail[T](q: Queue[CatenableList[T]]): BigInt = {
 		require(queueHasProperShapeIn(q))
 		q match {
 			case QEmpty() => 0
-			case QCons(f, r) => sumInList(f, 0) + sumInList(r, 0)
+			case QCons(f, r) => sumInList(f, 0) + sumInList(r, 0) 
 		}
 	} ensuring(_ >= 0)
 
+	//there were problems with foldleft in leon, so we use this function
 	private def sumInList[T](lst: List[CatenableList[T]], acc: BigInt): BigInt = {
 		require(lst.forall(_.hasProperShape) && acc >= 0)
 		lst match {

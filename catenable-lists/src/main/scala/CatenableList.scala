@@ -11,9 +11,8 @@ import leon.collection._
 
  // DONE: 1) verify and finish all structures
  // TODO: 2) add better checks and add external func (content, toList, etc.)!
- 
- // TODO: comparisons of contents in ensuring makes java exception
- // TODO: linkAll ensuring
+
+ // TODO: comparisons of contents of sets in ensuring makes java exception
 
 sealed abstract class CatenableList[T] {
 
@@ -111,8 +110,7 @@ object CatenableList {
 			case QEmpty() => q.head
 			case qTail => q.head.link(linkAll(qTail))
 		}
-	} //ensuring(res => res.content == q.content && res.size == q.size) //TODO : more ? 
-		//problem q.content gives CatenableList, not T
+	} ensuring(res => /*res.content == q.toList.flatMap{_.toList}.content &&*/ res.size == q.size) //TODO : more ? 
 
 	def sumTail[T](q: Queue[CatenableList[T]]): BigInt = {
 		require(queueHasProperShapeIn(q))

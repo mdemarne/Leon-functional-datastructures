@@ -3,8 +3,8 @@ import leon.lang._
 import leon.annotation._
 import leon.collection._
 
-/* 
- * Implementation of Queue based on "Purely Functionnal Data Structure, Okasaki, P15+" 
+/*
+ * Implementation of Queue based on "Purely Functionnal Data Structure, Okasaki, P15+"
  * @author Maëlle Colussi
  * @author Mathieu Demarne
  */
@@ -69,7 +69,7 @@ sealed abstract class Queue[T] {
 			// to other accesses in O(1) (snoc, head, tail, etc). Another possibility would be to implement
 			// those queues using QCons(List[T], List[List[T]]) for instance! But ++ might very well not be
 			// required.
-			case (QCons(f1, r1), QCons(f2, r2)) => QCons(f1, r1 ++ f2 ++ r2)
+			case (QCons(f1, r1), QCons(f2, r2)) => QCons(f1, r2 ++ f2.reverse ++ r1)
 		}
 	} ensuring(res => res.hasProperShape && res.size == this.size + that.size && res.content == this.content ++ that.content)
 

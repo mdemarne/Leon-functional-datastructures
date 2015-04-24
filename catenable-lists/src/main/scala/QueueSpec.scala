@@ -44,21 +44,17 @@ object QueueSpec {
 	  val Q1 = QCons[BigInt](Cons(1, Cons(2, Cons(3, Nil()))), Cons(5, Cons(4, Nil())))
 	  val listQ1: List[BigInt] = Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Nil())))))
 	  val Q2 = Q1.tail
-	  val listQ2: List[BigInt] = Cons(1, Cons(2, Cons(3, Cons(4, Nil()))))
+	  val listQ2: List[BigInt] = Cons(2, Cons(3, Cons(4, Cons(5, Nil()))))
 	  if (Q2.toList.content != listQ2.content || !isSorted(Q2.toList)) 
 		error[Unit]("Wrong order 3.1!")
 	  val Q3 = Q2.tail
-	  val listQ3: List[BigInt] = Cons(1, Cons(2, Cons(3, Nil())))
+	  val listQ3: List[BigInt] = Cons(3, Cons(4, Cons(5, Nil())))
 	  if (Q3.toList.content != listQ3.content || !isSorted(Q3.toList)) 
 		error[Unit]("Wrong order 3.2!")
 	  val Q4 = Q3.tail
-	  val listQ4: List[BigInt] = Cons(1, Cons(2, Nil()))
+	  val listQ4: List[BigInt] = Cons(4, Cons(5, Nil()))
 	  if (Q4.toList.content != listQ4.content || !isSorted(Q4.toList)) 
 		error[Unit]("Wrong order 3.3!")
-	  //after snoc
-	  val Q5 = Q4.snoc(3)
-	  if (Q5.toList.content != listQ3.content || !isSorted(Q5.toList)) 
-		error[Unit]("Wrong order 3.4!")
   }
 
 }

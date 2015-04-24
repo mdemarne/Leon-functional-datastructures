@@ -40,7 +40,7 @@ sealed abstract class Queue[T] {
 		this match {
 			case QCons(f, r) => f.head
 		}
-	}
+	} ensuring (res => this.content.contains(res))
 
 	def tail: Queue[T] = {
 		require(this.isDefined && this.hasProperShape)
@@ -76,13 +76,13 @@ sealed abstract class Queue[T] {
 	def toList: List[T] = (this match {
 		case QEmpty() => Nil()
 		case QCons(f, r) => f ++ r
-	}) ensuring (res => res.size == this.size && res.size >= 0)
+	}) ensuring (res => this.content == res.content && res.size == this.size && res.size >= 0)
 
 
 	def content: Set[T] = (this match {
 		case QEmpty() => Set()
 		case QCons(f, r) => f.content ++ r.content
-	}) ensuring (res => res == this.toList.content)
+	}) ensuring (res => res == this.toList.content /*&& res.size == this.toList.size*/)
 
 	/* Higher-order API */
 

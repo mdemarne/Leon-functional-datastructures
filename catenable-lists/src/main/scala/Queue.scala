@@ -96,6 +96,11 @@ sealed abstract class Queue[T] {
 		case QCons(f, r) => f.forall(func(_)) && r.forall(func(_))
 	}
 
+	def exists(func: T => Boolean): Boolean = this match {
+		case QEmpty() => false
+		case QCons(f, r) => f.exists(func(_)) || r.exists(func(_))
+	}
+
 	/* Invariants */
 
 	def hasProperShape = this match {

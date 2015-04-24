@@ -12,7 +12,7 @@ import leon.collection._
  // DONE: 1) verify and finish all structures
  // IN PROGRESS: 2) add better checks and add external func (content, toList, etc.)!
  // 						1. Some problems (weird errors from Leon side) using content. TODO: check if we want to use those.
- //							2. Adding some tests based on forall instead of content.
+ //							DONE 2. Adding some tests based on forall instead of content.
  // IN PROGRESS: add more Spec tests.
 
  // TODO: comparisons of contents of sets in ensuring makes java exception
@@ -125,7 +125,7 @@ object CatenableList {
 			case QEmpty() => q.head
 			case qTail => q.head.link(linkAll(qTail))
 		}
-	} ensuring(res => /*res.content == q.toList.flatMap{_.toList}.content &&*/ res.size == q.size) //TODO : more ?
+	} ensuring(res => q.forall(_.forall(res.contains(_))) && res.size == q.size)
 
 	def sumTail[T](q: Queue[CatenableList[T]]): BigInt = {
 		require(queueHasProperShapeIn(q))
@@ -135,14 +135,14 @@ object CatenableList {
 		}
 	} ensuring(_ >= 0)
 
-	//there were problems with foldleft in leon, so we use this function
+	// TODO: there were problems with foldleft in leon, so we use this function
 	private def sumInList[T](lst: List[CatenableList[T]], acc: BigInt): BigInt = {
 		require(lst.forall(_.hasProperShape) && acc >= 0)
 		lst match {
 			case Nil() => acc
 			case Cons(h, t) => sumInList(t, acc + h.size)
 		}
-	} ensuring(_ >= 0) // TODO
+	} ensuring(_ >= 0)
 
 	/* Invariants */
 

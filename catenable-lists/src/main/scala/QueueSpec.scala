@@ -41,7 +41,7 @@ object QueueSpec {
   }
   
   def testTail {
-	  val Q1 = QCons[BigInt](Cons(1, Cons(2, Cons(3, Nil()))), Cons(6, Cons(5, Cons(4, Nil()))))
+	  val Q1 = QCons[BigInt](Cons(1, Cons(2, Cons(3, Nil()))), Cons(5, Cons(4, Nil())))
 	  val listQ1: List[BigInt] = Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Nil())))))
 	  val Q2 = Q1.tail
 	  val listQ2: List[BigInt] = Cons(1, Cons(2, Cons(3, Cons(4, Nil()))))

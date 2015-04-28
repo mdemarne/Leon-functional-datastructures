@@ -75,7 +75,7 @@ sealed abstract class Queue[T] {
 
 	def toList: List[T] = (this match {
 		case QEmpty() => Nil()
-		case QCons(f, r) => f ++ r
+		case QCons(f, r) => f ++ r.reverse
 	}) ensuring (res => this.content == res.content && res.size == this.size && res.size >= 0)
 
 

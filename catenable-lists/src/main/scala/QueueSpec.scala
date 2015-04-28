@@ -40,7 +40,7 @@ object QueueSpec {
 		error[Unit]("Wrong order 2!")
   }
   
-  /*def testTail {
+  def testTail {
 	  val Q1 = QCons[BigInt](Cons(1, Cons(2, Cons(3, Nil()))), Cons(5, Cons(4, Nil())))
 	  val listQ1: List[BigInt] = Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Nil())))))
 	  val Q2 = Q1.tail
@@ -55,6 +55,6 @@ object QueueSpec {
 	  val listQ4: List[BigInt] = Cons(4, Cons(5, Nil()))
 	  if (Q4.toList.content != listQ4.content || !isSorted(Q4.toList)) 
 		error[Unit]("Wrong order 3.3!")
-  }*/
+  }
 
 }

@@ -48,8 +48,26 @@ sealed abstract class BinomialHeap[T] {
 			}
 		}
 	}
-	def deleteMin(): BinomialHeap[T] = {???}
-	def getMin(): ? = {???}
+	def deleteMin(): BinomialHeap[T] = {//TODO : see if something is required
+		require(this.isDefined)
+		this.getMin() match {
+			case (TreeNode[T](_, x, ts1), ts2) => ts1.reverse().merge(ts2)
+		}
+	}
+	def getMin(): (Tree, Tree) = {
+		require(this.isDefined)
+		this match {
+			case BHList[T](Cons(t, Nil())) => (h, Nil())
+			case BHList[T](Cons(t, ts)) => {
+				ts.getMin() match {
+					case (tp, tsp) => {
+						if (TOrdering.lteq(t.root(), tp.root())) (t, ts)
+						else (tp, Cons(t, tsp))
+					}
+				}
+			}
+		}
+	}
 	def reverse(): BinomialHeap[T] = {
 		this match {
 			case BHEmpty[T]() => this

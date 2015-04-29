@@ -5,7 +5,7 @@ import leon.collection._
 import leon.collection.ListOps._
 
 /*
- * Implementation of Queue based on "Purely Functionnal Data Structure, Okasaki, P15+"
+ * Implementation of Queue based on "Purely Functionnal Data Structure, Okasaki, P15+" - test file
  * @author Maëlle Colussi
  * @author Mathieu Demarne
  */
@@ -13,9 +13,8 @@ import leon.collection.ListOps._
  // TODO: pass --xlang as option to Leon for inline expansion
 object QueueSpec {
 
-  def test1 {
-      //TODO: do better testing!
-      val Q1 = QEmpty[Int]()
+  def testSnoc {
+      val Q1 = QEmpty[BigInt]()
       val Q2 = Q1.snoc(4)
       if (Q2.size != 1) error[Unit]("Wrong size!")
   }

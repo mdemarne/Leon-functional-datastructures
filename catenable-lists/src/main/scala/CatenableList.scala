@@ -10,10 +10,10 @@ import leon.collection._
  */
 
  // DONE: 1) verify and finish all structures
- // IN PROGRESS: 2) add better checks and add external func (content, toList, etc.)!
+ // DONE: 2) add better checks and add external func (content, toList, etc.)!
  // 						1. Some problems (weird errors from Leon side) using content. TODO: check if we want to use those.
  //							DONE 2. Adding some tests based on forall instead of content.
- // IN PROGRESS: add more Spec tests.
+ // DONE: add more Spec tests.
 
  // TODO: comparisons of contents of sets in ensuring makes java exception
 
@@ -100,7 +100,7 @@ sealed abstract class CatenableList[T] {
 	private def link(that: CatenableList[T]): CatenableList[T] = {
 		require(this.isDefined && this.hasProperShape && that.isDefined && that.hasProperShape)
 		this match {
-			case CCons(h, t) => CCons(h, t.snoc(that)) //TODO : p96 : "tree suspension"
+			case CCons(h, t) => CCons(h, t.snoc(that)) // TODO : p96 : "tree suspension"
 		}
 	} ensuring(res => /*res.content == this.content ++ that.content &&*/ res.size == this.size + that.size) // TODO: more ? on structure
 

@@ -9,7 +9,6 @@ import leon.collection._
  * @author Mathieu Demarne
  */
 
-
 sealed abstract class BinomialHeap[T] {
 
 	def isEmpty: Boolean = this == BHEmpty[T]()
@@ -17,13 +16,13 @@ sealed abstract class BinomialHeap[T] {
 	//def size: BigInt = {???} ensuring (res => res == this.toList.size && res >= 0)
 
 	def insert(x: T): BinomialHeap[T] = this.insTree(Node(0, x, Nil()))
-	def insTree(that: Tree[N]): BinomialHeap[T] = {//t1: that, ts: this
+	def insTree(t1: Tree[N]): BinomialHeap[T] = {//ts: this
 		this match {
 			case Cons(t2, rest) => {
-				if (that.rank < t2.rank) that :: this
-				else rest.insTree(that.link(t2))
+				if (t1.rank < t2.rank) t1 :: this
+				else rest.insTree(t1.link(t2))
 			}
-			case Nil() => Cons(that, Nil())
+			case Nil() => Cons(t1, Nil())
 		}
 	}
 	def merge(that: BinomialHeap[T]): BinomialHeap[T] = {
@@ -32,7 +31,7 @@ sealed abstract class BinomialHeap[T] {
 			case (Nil(), t) => t
 			case (t1 :: ts1, t2 :: ts2) => {
 				if (t1.rank < t2.rank)  t1 :: ts1.merge(that)
-				else if (t2.rank > t1.rank) t2 :: this.merge(ts2)
+				else if (t2.rank < t1.rank) t2 :: this.merge(ts2)
 				else merge(ts1, ts2).insTree(t1.link(t2))
 			}
 		}
@@ -40,15 +39,15 @@ sealed abstract class BinomialHeap[T] {
 	def findMin(): T = {
 		require(this.isDefined)
 		this match {
-			case BHList[T](Cons(h, Nil())) => h.root()
-			case BHList[T](Cons(h, t)) => {
-				val x = h.root()
-				val y = t.findMin()
+			case BHList[T](Cons(t, Nil())) => t.root()
+			case BHList[T](Cons(t, ts)) => {
+				val x = t.root()
+				val y = ts.findMin()
 				if (TOrdering.lteq(x, y)) x else y
 			}
 		}
 	}
-	def deleteMin(): BinomialHeap[T] = {//TODO : see if something is required
+	def deleteMin(): BinomialHeap[T] = {
 		require(this.isDefined)
 		this.getMin() match {
 			case (TreeNode[T](_, x, ts1), ts2) => ts1.reverse().merge(ts2)
@@ -57,7 +56,7 @@ sealed abstract class BinomialHeap[T] {
 	def getMin(): (Tree, Tree) = {
 		require(this.isDefined)
 		this match {
-			case BHList[T](Cons(t, Nil())) => (h, Nil())
+			case BHList[T](Cons(t, Nil())) => (t, Nil())
 			case BHList[T](Cons(t, ts)) => {
 				ts.getMin() match {
 					case (tp, tsp) => {

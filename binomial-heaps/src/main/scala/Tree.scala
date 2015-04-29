@@ -10,6 +10,8 @@ import leon.collection._
  */
 
 //TODO : how to write in Scala that we want such an object to exist for T ?
+//--> pass as function something of type Ordering[T]
+//--> or force as BigInt (and make a generic data structure copy afterwards)
 object TOrdering[T] extends Ordering[T] {
   def compare(a:T, b:T) = ...
 }
@@ -25,6 +27,9 @@ sealed abstract class Tree[T] {
 	
 	def rank(): BigInt = this match {
 		case TreeNode[T](r, x, c) => r
+	}
+	def root(): T = this match {
+		case TreeNode[T](r, x, c) => x
 	}
 }
 

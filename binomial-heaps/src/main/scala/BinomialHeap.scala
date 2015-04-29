@@ -10,8 +10,6 @@ import leon.collection._
  */
 
 
-
-
 sealed abstract class BinomialHeap[T] {
 
 	def isEmpty: Boolean = this == BHEmpty[T]()
@@ -39,14 +37,29 @@ sealed abstract class BinomialHeap[T] {
 			}
 		}
 	}
-	def findMin(): T = {???}
-	def deleteMin(): BinomialHeap[T] = {???} 
+	def findMin(): T = {
+		require(this.isDefined)
+		this match {
+			case BHList[T](Cons(h, Nil())) => h.root()
+			case BHList[T](Cons(h, t)) => {
+				val x = h.root()
+				val y = t.findMin()
+				if (TOrdering.lteq(x, y)) x else y
+			}
+		}
+	}
+	def deleteMin(): BinomialHeap[T] = {???}
+	def getMin(): ? = {???}
+	def reverse(): BinomialHeap[T] = {
+		this match {
+			case BHEmpty[T]() => this
+			case BHList[T](f) => BHList[T](f.reverse)
+		}
+	}
 	
 	
 	//def toList: List[T] = {???} ensuring (res => this.content == res.content && res.size == this.size && res.size >= 0)
 	//def content: Set[T] = {???} ensuring (res => res == this.toList.content /*&& res.size == this.toList.size*/)
-
-
 
 }
 

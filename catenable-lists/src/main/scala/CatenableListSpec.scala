@@ -11,6 +11,7 @@ import leon.collection.ListOps._
  */
 
  // TODO: pass --xlang as option to Leon for inline expansion
+ // TODO: check if it would be nice to have intermediate parametrized tests
 object CatenableListSpec {
 
   def testSnocCons {

@@ -11,11 +11,12 @@ import leon.collection._
 
  // DONE: 1) verify and finish all structures
  // DONE: 2) add better checks and add external func (content, toList, etc.)!
- // 						1. Some problems (weird errors from Leon side) using content. TODO: check if we want to use those.
+ // 						SOLVED 1. Some problems (weird errors from Leon side) using content.
  //							DONE 2. Adding some tests based on forall instead of content.
  // DONE: add more Spec tests.
 
- // TODO: comparisons of contents of sets in ensuring makes java exception
+ // DONE: comparisons of contents of sets in ensuring makes java exception
+ //		=> problem came from the use of flatMaps. Using recursive functions instead.
 
 sealed abstract class CatenableList[T] {
 

@@ -107,7 +107,7 @@ sealed abstract class CatenableList[T] {
 		this match {
 			case CCons(h, t) => CCons(h, t.snoc(that)) // TODO : p96 : "tree suspension"
 		}
-	} ensuring(res => /*res.content == this.content ++ that.content &&*/ res.size == this.size + that.size) // TODO: more ? on structure
+	} ensuring(res => res.content == this.content ++ that.content && res.size == this.size + that.size)
 
 	/* Invariants */
 

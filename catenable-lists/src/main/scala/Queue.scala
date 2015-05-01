@@ -73,6 +73,8 @@ sealed abstract class Queue[T] {
 		}
 	} ensuring(res => res.hasProperShape && res.size == this.size + that.size && res.content == this.content ++ that.content)
 
+	/* Structure transformation */
+
 	def toList: List[T] = (this match {
 		case QEmpty() => Nil()
 		case QCons(f, r) => f ++ r.reverse
@@ -82,7 +84,7 @@ sealed abstract class Queue[T] {
 	def content: Set[T] = (this match {
 		case QEmpty() => Set()
 		case QCons(f, r) => f.content ++ r.content
-	}) ensuring (res => res == this.toList.content /*&& res.size == this.toList.size*/)
+	}) ensuring (res => res == this.toList.content)
 
 	/* Higher-order API */
 

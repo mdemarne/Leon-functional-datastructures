@@ -36,12 +36,12 @@ sealed abstract class CatenableList[T] {
 	def cons(x: T): CatenableList[T] = {
 		require(this.hasProperShape)
 		CCons(x, QEmpty[CatenableList[T]]()) ++ this
-	} ensuring(res => this.forall(res.contains(_)) && res.contains(x) && res.head == x && res.size == this.size + 1)
+	} ensuring(res => res.content == this.content ++ Set(x) && res.head == x && res.size == this.size + 1)
 
 	def snoc(x: T): CatenableList[T] = {
 		require(this.hasProperShape)
 		this ++ CCons(x, QEmpty[CatenableList[T]]())
-	} ensuring(res => this.forall(res.contains(_)) && res.contains(x) && res.size == this.size + 1)
+	} ensuring(res => res.content == this.content ++ Set(x) && res.size == this.size + 1)
 
 	def ++(that: CatenableList[T]): CatenableList[T] = {
 		require(this.hasProperShape && that.hasProperShape)
@@ -50,7 +50,7 @@ sealed abstract class CatenableList[T] {
 			case (_, CEmpty()) => this
 			case _ => this.link(that)
 		}
-	} ensuring(res => this.forall(res.contains(_)) && that.forall(res.contains(_)) && res.size == this.size + that.size)
+	} ensuring(res => res.content == this.content ++ that.content && res.size == this.size + that.size)
 
 	def head: T = {
 		require(this.isDefined && this.hasProperShape)
@@ -68,19 +68,23 @@ sealed abstract class CatenableList[T] {
 		}
 	} ensuring(res => (this.forall(res.contains(_)) || res == CEmpty[T]()) && res.size == this.size - 1)
 
+	/* Structure transformation */
+
 	def content: Set[T] = this match {
 		case CEmpty() => Set()
 		case CCons(h, t) =>
 			// TODO: remove the val once inlinine issue resolved
 			// Set(h) ++ (t.toList.flatMap(_.toList)).content
-			val st1 = (t.toList.flatMap(_.toList)).content
+			val st1 = CatenableList.queueOfCatToContent(t)
 			Set(h) ++ st1
 	}
 
-	def toList: List[T] = this match {
+	def toList: List[T] = (this match {
 		case CEmpty() => Nil()
-		case CCons(h, t) => Cons(h, t.toList.flatMap(_.toList))
-	}
+		case CCons(h, t) => 
+			val st1 = CatenableList.queueOfCatToList(t)
+			h :: st1
+	}) ensuring(res => res.content == this.content)
 
 	/* high-level API */
 
@@ -135,7 +139,8 @@ object CatenableList {
 		}
 	} ensuring(_ >= 0)
 
-	// TODO: there were problems with foldleft in leon, so we use this function
+	/* TODO: there were problems with foldleft / flatMap in leon, so we use those functions instead */
+
 	private def sumInList[T](lst: List[CatenableList[T]], acc: BigInt): BigInt = {
 		require(lst.forall(_.hasProperShape) && acc >= 0)
 		lst match {
@@ -143,6 +148,26 @@ object CatenableList {
 			case Cons(h, t) => sumInList(t, acc + h.size)
 		}
 	} ensuring(_ >= 0)
+
+	def queueOfCatToContent[T](q: Queue[CatenableList[T]]): Set[T] = q match {
+		case QEmpty() => Set()
+		case QCons(l, r) => listOfCatToContent(l) ++ listOfCatToContent(r)
+	}
+
+	private def listOfCatToContent[T](l: List[CatenableList[T]]): Set[T] = l match {
+		case Nil() => Set()
+		case Cons(h, t) => h.content ++ listOfCatToContent(t)
+	}
+
+	def queueOfCatToList[T](q: Queue[CatenableList[T]]): List[T] = q match {
+		case QEmpty() => Nil()
+		case QCons(l, r) => listOfCatToList(l) ++ listOfCatToList(r)
+	}
+
+	private def listOfCatToList[T](l: List[CatenableList[T]]): List[T] = l match {
+		case Nil() => Nil()
+		case Cons(h, t) => h.toList ++ listOfCatToList(t)
+	}
 
 	/* Invariants */
 

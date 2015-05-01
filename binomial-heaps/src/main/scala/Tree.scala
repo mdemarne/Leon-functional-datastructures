@@ -9,20 +9,11 @@ import leon.collection._
  * @author Mathieu Demarne
  */
 
-//TODO : how to write in Scala that we want such an object to exist for T ?
-//--> pass as function something of type Ordering[T]
-//--> or force as BigInt (and make a generic data structure copy afterwards)
-//type T = BigInt //?
-// or use trait  Ordered[A] //? if still exists
-object TOrdering[T] extends Ordering[T] {
-  def compare(a:T, b:T) = ...
-}
-
-sealed abstract class Tree[T] {
+sealed abstract class Tree[T <: Ordered[T]] {
 	def link(that: Tree[T]) : Tree[T] = {//t1: this, t2:that
 		(this, that) match {
 			case (TreeNode[T](r, x1, c1), TreeNode[T](_, x2, c2)) =>
-				if (TOrdering.lteq(x1, x2)) TreeNode[T](r + 1, x1, Cons(that, c1))
+				if (x1 <= x2) TreeNode[T](r + 1, x1, Cons(that, c1))
 				else TreeNode[T](r + 1, x2, Cons(this, c2))
 		}
 	}
@@ -40,5 +31,5 @@ sealed abstract class Tree[T] {
 
 }
 
-case class TreeNode[T](r: BigInt, x: T, c: BHList[T]) extends Tree[T]
+case class TreeNode[T](r: BigInt, x: T, c: BinomialHeap[T]) extends Tree[T]
 

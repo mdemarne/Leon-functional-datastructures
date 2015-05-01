@@ -9,57 +9,67 @@ import leon.collection._
  * @author Mathieu Demarne
  */
 
-sealed abstract class BinomialHeap[T] {
+sealed abstract class BinomialHeap[T <: Ordered[T]] {
 
 	def isEmpty: Boolean = this == BHEmpty[T]()
 	def isDefined: Boolean = !this.isEmpty
+	def isFormallyOk: Boolean = this match {
+		case BHList(Cons(t2, Nil())) => false
+		case _ => true
+	}
 	
-	def insert(x: T): BinomialHeap[T] = this.insTree(Node(0, x, Nil()))
-	def insTree(t1: Tree[N]): BinomialHeap[T] = {//ts: this
+	def insert(x: T): BinomialHeap[T] = {
+		require(this.isFormallyOk)
+		this.insTree(TreeNode[T](0, x, BHEmpty()))
+	}
+	
+	def insTree(t1: Tree[T]): BinomialHeap[T] = {//ts: this
+		require(this.isFormallyOk)
 		this match {
-			case Cons(t2, rest) => {
-				if (t1.rank < t2.rank) Cons(t1, this)
-				else rest.insTree(t1.link(t2))
+			case a @ BHList(Cons(t2, rest)) => {
+				if (t1.rank < t2.rank) BHList(Cons(t1, a.f))
+				else BHList(rest).insTree(t1.link(t2))
 			}
-			case Nil() => Cons(t1, Nil())
+			case BHEmpty() => BHList[T](Cons(t1, Nil()))
 		}
 	}
 	def merge(that: BinomialHeap[T]): BinomialHeap[T] = {
+		require(this.isFormallyOk && that.isFormallyOk)
 		(this, that) match {
-			case (t, Nil()) => t
-			case (Nil(), t) => t
-			case (Cons(t1, ts1), Cons(t2, ts2)) => {
-				if (t1.rank < t2.rank)  Cons(t1, ts1.merge(that))
-				else if (t2.rank < t1.rank) Cons(t2, this.merge(ts2))
-				else merge(ts1, ts2).insTree(t1.link(t2))
+			case (BHList(t), BHList(Nil())) => BHList(t)
+			case (BHList(Nil()), BHList(t)) => BHList(t)
+			case (BHList(Cons(t1, ts1)), BHList(Cons(t2, ts2))) => {
+				if (t1.rank < t2.rank)  BHList(Cons(t1, (BHList(ts1).merge(that)).f))
+				else if (t2.rank < t1.rank) BHList(Cons(t2, (this.merge(BHList(ts2))).f))
+				else merge(BHList(ts1), BHList(ts2)).insTree(t1.link(t2))
 			}
 		}
 	}
 	def findMin(): T = {
-		require(this.isDefined)
+		require(this.isDefined && this.isFormallyOk)
 		this match {
-			case BHList[T](Cons(t, Nil())) => t.root()
-			case BHList[T](Cons(t, ts)) => {
+			case BHList(Cons(t, Nil())) => t.root()
+			case BHList(Cons(t, ts)) => {
 				val x = t.root()
 				val y = ts.findMin()
-				if (TOrdering.lteq(x, y)) x else y
+				if (/*TOrdering.lteq(x, y)*/ x <= y) x else y
 			}
 		}
 	}
 	def deleteMin(): BinomialHeap[T] = {
-		require(this.isDefined)
+		require(this.isDefined && this.isFormallyOk)
 		this.getMin() match {
 			case (TreeNode[T](_, x, ts1), ts2) => ts1.reverse().merge(ts2)
 		}
 	}
 	def getMin(): (Tree, Tree) = {
-		require(this.isDefined)
+		require(this.isDefined && this.isFormallyOk)
 		this match {
-			case BHList[T](Cons(t, Nil())) => (t, Nil())
-			case BHList[T](Cons(t, ts)) => {
+			case BHList(Cons(t, Nil())) => (t, Nil())
+			case BHList(Cons(t, ts)) => {
 				ts.getMin() match {
 					case (tp, tsp) => {
-						if (TOrdering.lteq(t.root(), tp.root())) (t, ts)
+						if (/*TOrdering.lteq(t.root(), tp.root())*/ t.root() <= tp.root()) (t, ts)
 						else (tp, Cons(t, tsp))
 					}
 				}
@@ -67,9 +77,10 @@ sealed abstract class BinomialHeap[T] {
 		}
 	}
 	def reverse(): BinomialHeap[T] = {
+		require(this.isFormallyOk)
 		this match {
-			case BHEmpty[T]() => this
-			case BHList[T](f) => BHList[T](f.reverse)
+			case BHEmpty() => this
+			case BHList(f) => BHList(f.reverse)
 		}
 	}
 	

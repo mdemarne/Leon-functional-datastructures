@@ -12,17 +12,17 @@ import leon.collection._
 sealed abstract class Tree[T <: Ordered[T]] {
 	def link(that: Tree[T]) : Tree[T] = {//t1: this, t2:that
 		(this, that) match {
-			case (TreeNode[T](r, x1, c1), TreeNode[T](_, x2, c2)) =>
-				if (x1 <= x2) TreeNode[T](r + 1, x1, Cons(that, c1))
-				else TreeNode[T](r + 1, x2, Cons(this, c2))
+			case (TreeNode(r, x1, c1), TreeNode(_, x2, c2)) =>
+				if (x1 <= x2) TreeNode(r + 1, x1, BHList(Cons(that, c1.f)))
+				else TreeNode(r + 1, x2, BHList(Cons(this, c2.f)))
 		}
 	}
 	
 	def rank(): BigInt = this match {
-		case TreeNode[T](r, x, c) => r
+		case TreeNode(r, x, c) => r
 	}
 	def root(): T = this match {
-		case TreeNode[T](r, x, c) => x
+		case TreeNode(r, x, c) => x
 	}
 	
 	//def size: BigInt = {???} ensuring (res => res == this.toList.size && res >= 0)

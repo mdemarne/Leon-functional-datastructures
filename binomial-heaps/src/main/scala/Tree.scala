@@ -33,6 +33,12 @@ sealed abstract class Tree[T] {
 	def root(): T = this match {
 		case TreeNode[T](r, x, c) => x
 	}
+	
+	//def size: BigInt = {???} ensuring (res => res == this.toList.size && res >= 0)
+	//def toList: List[T] = {???} ensuring (res => this.content == res.content && res.size == this.size && res.size >= 0)
+	//def content: Set[T] = {???} ensuring (res => res == this.toList.content /*&& res.size == this.toList.size*/)
+
 }
 
-case class TreeNode[T](r: BigInt, x: T, c: Tree[T]) extends Tree[T]
+case class TreeNode[T](r: BigInt, x: T, c: BHList[T]) extends Tree[T]
+

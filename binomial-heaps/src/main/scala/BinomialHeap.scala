@@ -13,13 +13,12 @@ sealed abstract class BinomialHeap[T] {
 
 	def isEmpty: Boolean = this == BHEmpty[T]()
 	def isDefined: Boolean = !this.isEmpty
-	//def size: BigInt = {???} ensuring (res => res == this.toList.size && res >= 0)
-
+	
 	def insert(x: T): BinomialHeap[T] = this.insTree(Node(0, x, Nil()))
 	def insTree(t1: Tree[N]): BinomialHeap[T] = {//ts: this
 		this match {
 			case Cons(t2, rest) => {
-				if (t1.rank < t2.rank) t1 :: this
+				if (t1.rank < t2.rank) Cons(t1, this)
 				else rest.insTree(t1.link(t2))
 			}
 			case Nil() => Cons(t1, Nil())
@@ -29,9 +28,9 @@ sealed abstract class BinomialHeap[T] {
 		(this, that) match {
 			case (t, Nil()) => t
 			case (Nil(), t) => t
-			case (t1 :: ts1, t2 :: ts2) => {
-				if (t1.rank < t2.rank)  t1 :: ts1.merge(that)
-				else if (t2.rank < t1.rank) t2 :: this.merge(ts2)
+			case (Cons(t1, ts1), Cons(t2, ts2)) => {
+				if (t1.rank < t2.rank)  Cons(t1, ts1.merge(that))
+				else if (t2.rank < t1.rank) Cons(t2, this.merge(ts2))
 				else merge(ts1, ts2).insTree(t1.link(t2))
 			}
 		}
@@ -74,7 +73,7 @@ sealed abstract class BinomialHeap[T] {
 		}
 	}
 	
-	
+	//def size: BigInt = {???} ensuring (res => res == this.toList.size && res >= 0)
 	//def toList: List[T] = {???} ensuring (res => this.content == res.content && res.size == this.size && res.size >= 0)
 	//def content: Set[T] = {???} ensuring (res => res == this.toList.content /*&& res.size == this.toList.size*/)
 

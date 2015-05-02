@@ -9,7 +9,7 @@ import leon.collection._
  * @author Mathieu Demarne
  */
  
- //TODO : type problem 
+ //TODO
  // T <: Ordered[] problem with Test
 
 sealed abstract class BinomialHeap[T <: Ordered[T]] extends Test[T] {
@@ -63,7 +63,7 @@ sealed abstract class BinomialHeap[T <: Ordered[T]] extends Test[T] {
 		require(this.isDefined && this.isFormallyOk)
 		this.getMin() match {
 			case (TreeNode(_, x, ts1), ts2) => 
-				ts1.reverse().merge( BHList( Cons(ts2, Nil[Tree[T]]()) )) //type problem here
+				ts1.reverse().merge( BHList(ts2))
 		}
 	}
 	def getMin(): (Tree[T], List[Tree[T]]) = {

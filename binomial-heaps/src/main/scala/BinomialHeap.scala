@@ -8,11 +8,8 @@ import leon.collection._
  * @author Maëlle Colussi
  * @author Mathieu Demarne
  */
- 
- //TODO
- // T <: Ordered[] problem with Test
 
-sealed abstract class BinomialHeap[T <: Ordered[T]] extends Test[T] {
+sealed abstract class BinomialHeap[T <: Ordered[T]] /*extends Test[T]*/ {
 
 	def isEmpty: Boolean = this == BHEmpty[T]()
 	def isDefined: Boolean = !this.isEmpty
@@ -42,10 +39,10 @@ sealed abstract class BinomialHeap[T <: Ordered[T]] extends Test[T] {
 			case (BHList(t), BHList(Nil())) => BHList(t)
 			case (BHList(Nil()), BHList(t)) => BHList(t)
 			case (BHList(Cons(t1, ts1)), BHList(Cons(t2, ts2))) => {
-				if (t1.rank < t2.rank)  BHList(Cons(t1, (BHList(ts1).merge(that)).f /*match {
-					case BHList(f) => f }*/))
-				else if (t2.rank < t1.rank) BHList(Cons(t2, (this.merge(BHList(ts2))).f /*match {
-					case BHList(f) => f }*/))
+				if (t1.rank < t2.rank)  BHList(Cons(t1, (BHList(ts1).merge(that))/*.f*/ match {
+					case BHList(f) => f }))
+				else if (t2.rank < t1.rank) BHList(Cons(t2, (this.merge(BHList(ts2)))/*.f*/ match {
+					case BHList(f) => f }))
 				else BHList(ts1).merge(BHList(ts2)).insTree(t1.link(t2))
 			}
 		}
@@ -57,7 +54,7 @@ sealed abstract class BinomialHeap[T <: Ordered[T]] extends Test[T] {
 			case BHList(Cons(t, ts)) => {
 				val x = t.root()
 				val y = BHList(ts).findMin()
-				if (/*TOrdering.lteq(x, y)*/ x <= y) x else y
+				if (/*TOrdering.lteq(x, y)*/ x.<=(y)) x else y
 			}
 		}
 	}
@@ -75,7 +72,7 @@ sealed abstract class BinomialHeap[T <: Ordered[T]] extends Test[T] {
 			case BHList(Cons(t, ts)) => {
 				BHList(ts).getMin() match {
 					case (tp, tsp) => {
-						if (/*TOrdering.lteq(t.root(), tp.root())*/ t.root() <= tp.root()) (t, ts)
+						if (/*TOrdering.lteq(t.root(), tp.root())*/ t.root().<=(tp.root())) (t, ts)
 						else (tp, Cons(t, tsp))
 					}
 				}
@@ -96,7 +93,7 @@ sealed abstract class BinomialHeap[T <: Ordered[T]] extends Test[T] {
 
 }
 
-case class BHList[T <: Ordered[T]](f : List[Tree[T]]) extends BinomialHeap[T] with Test[T]
-case class BHEmpty[T <: Ordered[T]]() extends BinomialHeap[T] with Test[T] { val f = Nil[Tree[T]]() }
+case class BHList[T <: Ordered[T]](f : List[Tree[T]]) extends BinomialHeap[T] //with Test[T]
+case class BHEmpty[T <: Ordered[T]]() extends BinomialHeap[T] //with Test[T] { val f = Nil[Tree[T]]() }
 
-trait Test[T <: Ordered[T]] {val f: List[Tree[T]]}
+//trait Test[T <: Ordered[T]] {val f: List[Tree[T]]}

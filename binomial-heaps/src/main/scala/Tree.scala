@@ -13,12 +13,12 @@ sealed abstract class Tree[T <: Ordered[T]] {
 	def link(that: Tree[T]) : Tree[T] = {//t1: this, t2:that
 		(this, that) match {
 			case (TreeNode(r, x1, c1), TreeNode(_, x2, c2)) =>
-				if (x1.<= x2) TreeNode(r + 1, x1, BHList(Cons(that, c1.f /*match {
+				if (x1.<=(x2) /*TOrdering.lteq(x1, x2)*/) TreeNode(r + 1, x1, BHList(Cons(that, c1/*.f*/ match {
 					case BHList(f) => f
-					case BHEmpty() => Nil[Tree[T]]()}*/)))
-				else TreeNode(r + 1, x2, BHList(Cons(this, c2.f /*match {
+					case BHEmpty() => Nil[Tree[T]]()})))
+				else TreeNode(r + 1, x2, BHList(Cons(this, c2/*.f*/ match {
 					case BHList(f) => f
-					case BHEmpty() => Nil[Tree[T]]()}*/)))
+					case BHEmpty() => Nil[Tree[T]]()})))
 		}
 	}
 	

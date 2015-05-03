@@ -29,10 +29,11 @@ sealed abstract class Queue[T] {
 
 	def size: BigInt = {
 		require(this.hasProperShape)
-		this match {
+		val res: BigInt = this match {
 			case QEmpty() => 0
 			case QCons(f, r) => f.size + r.size
 		}
+		res
 	} ensuring (res => res == this.toList.size && res >= 0)
 
 	def head: T = {
@@ -44,11 +45,12 @@ sealed abstract class Queue[T] {
 
 	def tail: Queue[T] = {
 		require(this.isDefined && this.hasProperShape)
-		this match {
+		val res: Queue[T] = this match {
 			case QCons(Cons(e, Nil()), r) if r.isEmpty => QEmpty()
 			case QCons(Cons(e, Nil()), r) => QCons(r.reverse, Nil())
 			case QCons(Cons(e, es), r) => QCons(es, r)
 		}
+		res
 	} ensuring (res => res.hasProperShape && res.size + 1 == this.size)
 
 	def snoc(x: T): Queue[T] = {
@@ -75,23 +77,23 @@ sealed abstract class Queue[T] {
 
 	/* Structure transformation */
 
-	def toList: List[T] = (this match {
+	def toList: List[T] = { val res: List[T] = this match {
 		case QEmpty() => Nil()
 		case QCons(f, r) => f ++ r.reverse
-	}) ensuring (res => this.content == res.content && res.size == this.size && res.size >= 0)
+	}; res} ensuring (res => this.content == res.content && res.size == this.size && res.size >= 0)
 
 
-	def content: Set[T] = (this match {
+	def content: Set[T] = {val res: Set[T] = this match {
 		case QEmpty() => Set()
 		case QCons(f, r) => f.content ++ r.content
-	}) ensuring (res => res == this.toList.content)
+	}; res} ensuring (res => res == this.toList.content)
 
 	/* Higher-order API */
 
-	def map[R](func: T => R): Queue[R] = (this match {
+	def map[R](func: T => R): Queue[R] = {val res: Queue[R] = this match {
 		case QEmpty() => QEmpty()
 		case QCons(f, r) => QCons(f.map(func(_)), r.map(func(_)))
-	}) ensuring (_.size == this.size)
+	}; res} ensuring (_.size == this.size)
 
 	def forall(func: T => Boolean): Boolean = this match {
 		case QEmpty() => true /* Default, as in Scala standards */

@@ -28,10 +28,11 @@ sealed abstract class CatenableList[T] {
 
 	def size: BigInt = {
 		require(this.hasProperShape)
-		this match {
+		val res: BigInt = this match {
 			case CEmpty() => 0
 			case CCons(h, t) => 1 + CatenableList.sumTail(t)
 		}
+		res
 	} ensuring (_ >= 0)
 
 	def cons(x: T): CatenableList[T] = {
@@ -63,10 +64,11 @@ sealed abstract class CatenableList[T] {
 
 	def tail: CatenableList[T] = {
 		require(this.isDefined && this.hasProperShape)
-		this match {
+		val res: CatenableList[T] = this match {
 			case CCons(h, t) if t.isEmpty => CEmpty()
 			case CCons(h, t) => CatenableList.linkAll(t)
 		}
+		res
 	} ensuring(res => (this.forall(res.contains(_)) || res == CEmpty[T]()) && res.size == this.size - 1)
 
 	/* Structure transformation */
@@ -80,12 +82,12 @@ sealed abstract class CatenableList[T] {
 			Set(h) ++ st1
 	}
 
-	def toList: List[T] = (this match {
+	def toList: List[T] = { val res: List[T] = this match {
 		case CEmpty() => Nil()
 		case CCons(h, t) => 
 			val st1 = CatenableList.queueOfCatToList(t)
 			h :: st1
-	}) ensuring(res => res.content == this.content)
+	}; res} ensuring(res => res.content == this.content)
 
 	/* high-level API */
 
@@ -134,10 +136,11 @@ object CatenableList {
 
 	def sumTail[T](q: Queue[CatenableList[T]]): BigInt = {
 		require(queueHasProperShapeIn(q))
-		q match {
+		val res: BigInt = q match {
 			case QEmpty() => 0
 			case QCons(f, r) => sumInList(f, 0) + sumInList(r, 0)
 		}
+		res
 	} ensuring(_ >= 0)
 
 	/* TODO: there were problems with foldleft / flatMap in leon, so we use those functions instead */

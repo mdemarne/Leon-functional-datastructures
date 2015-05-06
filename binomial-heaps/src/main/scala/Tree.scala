@@ -14,11 +14,9 @@ sealed abstract class Tree[T <: Ordered[T]] {
 		(this, that) match {
 			case (TreeNode(r, x1, c1), TreeNode(_, x2, c2)) =>
 				if (x1.<=(x2) /*TOrdering.lteq(x1, x2)*/) TreeNode(r + 1, x1, BHList(Cons(that, c1/*.f*/ match {
-					case BHList(f) => f
-					case BHEmpty() => Nil()})))
+					case BHList(f) => f})))
 				else TreeNode(r + 1, x2, BHList(Cons(this, c2/*.f*/ match {
-					case BHList(f) => f
-					case BHEmpty() => Nil()})))
+					case BHList(f) => f})))
 		}
 	}
 	

@@ -21,16 +21,16 @@ object CatenableListSpec {
   }
 
   def testMergeAndHead {
-  	  val l1 = CEmpty[BigInt]().cons(1).cons(2).cons(3)
-  	  val l2 = CEmpty[BigInt]().cons(4).cons(5).cons(6)
+  	  val l1 = CEmpty[BigInt]().snoc(1).snoc(2).snoc(3)
+  	  val l2 = CEmpty[BigInt]().snoc(4).snoc(5).snoc(6)
   	  val lt1 = l1 ++ l2
       assert(lt1.content == l1.content ++ l2.content)
   	  
-  	  val l3 = CEmpty[BigInt]().cons(7).cons(8).cons(9)
+  	  val l3 = CEmpty[BigInt]().snoc(7).snoc(8).snoc(9)
   	  val lt2 = lt1 ++ l3
       assert(lt2.content == l1.content ++ l2.content ++ l3.content)
   	  
-  	  val lt3 = lt1.snoc(0)
+  	  val lt3 = lt2.cons(0)
       assert(lt3.head == 0)
       assert(lt3.size == 10)
   }
@@ -38,9 +38,9 @@ object CatenableListSpec {
   // TODO: check why this is unkown, it does not take any parameter and should therefore be
   // executed.
   def testHeadAndTail {
-  	val l1 = CEmpty[BigInt]().cons(3).cons(4).snoc(2).cons(5).cons(6).snoc(1)
-  	val l2 = l1 ++ CEmpty[BigInt]().cons(8).snoc(7)
-  	val l3 = CEmpty[BigInt]().cons(0).snoc(-1) ++ l2
+  	val l1 = CEmpty[BigInt]().snoc(3).snoc(4).cons(2).snoc(5).snoc(6).cons(1)
+  	val l2 = l1 ++ CEmpty[BigInt]().snoc(8).cons(7)
+  	val l3 = CEmpty[BigInt]().snoc(0).cons(-1) ++ l2
 
   	assert(l3.size == 10)
   	assert(l3.head == -1)

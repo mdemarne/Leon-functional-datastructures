@@ -19,7 +19,7 @@ sealed abstract class BinomialHeapBI {
 
 	def insert(x: BigInt): BinomialHeapBI = {
 		this.insTree(TreeNode(0, x, BHList(Nil())))
-	}
+	} ensuring (res => res.size == this.size + 1) //TODO : more ?
 
 	def insTree(t1: TreeBI): BinomialHeapBI = {//ts: this
 		this match {
@@ -29,7 +29,8 @@ sealed abstract class BinomialHeapBI {
 				else BHList(rest).insTree(t1.link(t2))
 			}
 		}
-	}
+	} ensuring (res => res.size == this.size + t1.size) //TODO : more ?
+
 	def merge(that: BinomialHeapBI): BinomialHeapBI = {
 		(this, that) match {
 			case (BHList(t), BHList(Nil())) => BHList(t)
@@ -42,7 +43,8 @@ sealed abstract class BinomialHeapBI {
 				else BHList(ts1).merge(BHList(ts2)).insTree(t1.link(t2))
 			}
 		}
-	}
+	} ensuring (res => res.size == this.size + that.size) //TODO : more ?
+
 	def findMin(): BigInt = {
 		require(this.isDefined)
 		this match {
@@ -53,14 +55,15 @@ sealed abstract class BinomialHeapBI {
 				if (x <= y) x else y
 			}
 		}
-	}
+	} //ensuring () //TODO
+
 	def deleteMin(): BinomialHeapBI = {
 		require(this.isDefined)
 		this.getMin() match {
 			case (TreeNode(_, x, ts1), ts2) => 
 				ts1.reverse().merge( BHList(ts2))
 		}
-	}
+	} ensuring (res => res.size == this.size - 1) //TODO : more ?
 
 	def getMin(): (TreeBI, List[TreeBI]) = {
 		require(this.isDefined)
@@ -75,14 +78,29 @@ sealed abstract class BinomialHeapBI {
 				}
 			}
 		}
-	}
+	} //ensuring () //TODO
+
 	def reverse(): BinomialHeapBI = {
 		this match {
 			case BHList(f) => BHList(f.reverse)
 		}
-	}
-	
-	//def size: BigInt = {???} ensuring (res => res == this.toList.size && res >= 0)
+	} ensuring (res => res.size == this.size)
+
+	def size: BigInt = {
+		this match {
+			case BHList(Nil()) => 0
+			case BHList(f) => sumInList(f, 0)
+		}
+	} ensuring (res => /*res == this.toList.size &&*/ res >= 0)
+
+	private def sumInList[T](lst: List[TreeBI], acc: BigInt): BigInt = {
+		require(acc >= 0)
+		lst match {
+			case Nil() => acc
+			case Cons(h, t) => sumInList(t, acc + h.size)
+		}
+	} ensuring(_ >= 0)
+
 	//def toList: List[T] = {???} ensuring (res => this.content == res.content && res.size == this.size && res.size >= 0)
 	//def content: Set[T] = {???} ensuring (res => res == this.toList.content /*&& res.size == this.toList.size*/)
 

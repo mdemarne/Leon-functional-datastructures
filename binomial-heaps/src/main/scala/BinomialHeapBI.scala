@@ -11,44 +11,40 @@ import leon.collection._
 
 sealed abstract class BinomialHeapBI {
 
-	def isEmpty: Boolean = this == BHEmpty()
+	def isEmpty: Boolean = this match {
+		case BHList(Nil()) => true
+		case _ => false
+	}
 	def isDefined: Boolean = !this.isEmpty
-	def isFormallyOk: Boolean = this match {
-		case BHList(Cons(t2, Nil())) => false
-		case _ => true
-	}
-	
+
 	def insert(x: BigInt): BinomialHeapBI = {
-		require(this.isFormallyOk)
-		this.insTree(TreeNode(0, x, BHEmpty()))
+		this.insTree(TreeNode(0, x, BHList(Nil())))
 	}
-	
+
 	def insTree(t1: TreeBI): BinomialHeapBI = {//ts: this
-		require(this.isFormallyOk)
 		this match {
+			case BHList(Nil()) => BHList(Cons(t1, Nil()))
 			case a @ BHList(Cons(t2, rest)) => {
 				if (t1.rank < t2.rank) BHList(Cons(t1, a.f))
 				else BHList(rest).insTree(t1.link(t2))
 			}
-			case BHEmpty() => BHList(Cons(t1, Nil()))
 		}
 	}
 	def merge(that: BinomialHeapBI): BinomialHeapBI = {
-		require(this.isFormallyOk && that.isFormallyOk)
 		(this, that) match {
 			case (BHList(t), BHList(Nil())) => BHList(t)
 			case (BHList(Nil()), BHList(t)) => BHList(t)
 			case (BHList(Cons(t1, ts1)), BHList(Cons(t2, ts2))) => {
-				if (t1.rank < t2.rank)  BHList(Cons(t1, (BHList(ts1).merge(that)) match {
-					case BHList(f) => f }))
-				else if (t2.rank < t1.rank) BHList(Cons(t2, (this.merge(BHList(ts2))) match {
-					case BHList(f) => f }))
+				if (t1.rank < t2.rank)  BHList(Cons(t1, 
+					(BHList(ts1).merge(that)) match { case BHList(f) => f }))
+				else if (t2.rank < t1.rank) BHList(Cons(t2, 
+					(this.merge(BHList(ts2))) match {case BHList(f) => f }))
 				else BHList(ts1).merge(BHList(ts2)).insTree(t1.link(t2))
 			}
 		}
 	}
 	def findMin(): BigInt = {
-		require(this.isDefined && this.isFormallyOk)
+		require(this.isDefined)
 		this match {
 			case BHList(Cons(t, Nil())) => t.root()
 			case BHList(Cons(t, ts)) => {
@@ -59,14 +55,15 @@ sealed abstract class BinomialHeapBI {
 		}
 	}
 	def deleteMin(): BinomialHeapBI = {
-		require(this.isDefined && this.isFormallyOk)
+		require(this.isDefined)
 		this.getMin() match {
 			case (TreeNode(_, x, ts1), ts2) => 
 				ts1.reverse().merge( BHList(ts2))
 		}
 	}
+
 	def getMin(): (TreeBI, List[TreeBI]) = {
-		require(this.isDefined && this.isFormallyOk)
+		require(this.isDefined)
 		this match {
 			case BHList(Cons(t, Nil())) => (t, Nil())
 			case BHList(Cons(t, ts)) => {
@@ -80,9 +77,7 @@ sealed abstract class BinomialHeapBI {
 		}
 	}
 	def reverse(): BinomialHeapBI = {
-		require(this.isFormallyOk)
 		this match {
-			case BHEmpty() => this
 			case BHList(f) => BHList(f.reverse)
 		}
 	}
@@ -94,4 +89,3 @@ sealed abstract class BinomialHeapBI {
 }
 
 case class BHList(f : List[TreeBI]) extends BinomialHeapBI
-case class BHEmpty() extends BinomialHeapBI

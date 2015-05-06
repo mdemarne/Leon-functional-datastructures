@@ -13,12 +13,10 @@ sealed abstract class TreeBI {
 	def link(that: TreeBI) : TreeBI = {//t1: this, t2:that
 		(this, that) match {
 			case (TreeNode(r, x1, c1), TreeNode(_, x2, c2)) =>
-				if (x1 <= x2) TreeNode(r + 1, x1, BHList(Cons(that, c1 match {
-					case BHList(f) => f
-					case BHEmpty() => Nil()})))
-				else TreeNode(r + 1, x2, BHList(Cons(this, c2 match {
-					case BHList(f) => f
-					case BHEmpty() => Nil()})))
+				if (x1 <= x2) TreeNode(r + 1, x1, BHList(Cons(that, 
+					c1 match {case BHList(f) => f})))
+				else TreeNode(r + 1, x2, BHList(Cons(this, 
+					c2 match {case BHList(f) => f})))
 		}
 	}
 	

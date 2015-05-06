@@ -69,7 +69,7 @@ sealed abstract class CatenableList[T] {
 			case CCons(h, t) => CatenableList.linkAll(t)
 		}
 		res
-	} ensuring(res => (this.forall(res.contains(_)) || res == CEmpty[T]()) && res.size == this.size - 1)
+	} ensuring(res => (res.forall(this.contains(_)) || res == CEmpty[T]()) && res.size == this.size - 1)
 
 	/* Structure transformation */
 
@@ -77,9 +77,9 @@ sealed abstract class CatenableList[T] {
 		case CEmpty() => Set()
 		case CCons(h, t) =>
 			// TODO: remove the val once inlinine issue resolved
-			// Set(h) ++ (t.toList.flatMap(_.toList)).content
-			val st1 = CatenableList.queueOfCatToContent(t)
-			Set(h) ++ st1
+			Set[T](h) ++ (t.toList.flatMap[T](_.toList)).content
+			//val st1 = CatenableList.queueOfCatToContent(t)
+			//Set(h) ++ st1
 	}
 
 	def toList: List[T] = { val res: List[T] = this match {

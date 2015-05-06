@@ -15,7 +15,7 @@ import leon.collection._
  //							DONE 2. Adding some tests based on forall instead of content.
  // DONE: add more Spec tests.
 
- // DONE: comparisons of contents of sets in ensuring makes java exception
+ // DONE: comparisons of contents of sets in //ensuring makes java exception
  //		=> problem came from the use of flatMaps. Using recursive functions instead.
 
 sealed abstract class CatenableList[T] {
@@ -27,49 +27,49 @@ sealed abstract class CatenableList[T] {
 	def isDefined: Boolean = !this.isEmpty
 
 	def size: BigInt = {
-		require(this.hasProperShape)
+		//require(this.hasProperShape)
 		val res: BigInt = this match {
 			case CEmpty() => 0
 			case CCons(h, t) => 1 + CatenableList.sumTail(t)
 		}
 		res
-	} ensuring (_ >= 0)
+	} //ensuring (_ >= 0)
 
 	def cons(x: T): CatenableList[T] = {
-		require(this.hasProperShape)
+		//require(this.hasProperShape)
 		CCons(x, QEmpty[CatenableList[T]]()) ++ this
-	} ensuring(res => res.content == this.content ++ Set(x) && res.head == x && res.size == this.size + 1)
+	} //ensuring(res => res.content == this.content ++ Set(x) && res.head == x && res.size == this.size + 1)
 
 	def snoc(x: T): CatenableList[T] = {
-		require(this.hasProperShape)
+		//require(this.hasProperShape)
 		this ++ CCons(x, QEmpty[CatenableList[T]]())
-	} ensuring(res => res.content == this.content ++ Set(x) && res.size == this.size + 1)
+	} //ensuring(res => res.content == this.content ++ Set(x) && res.size == this.size + 1)
 
 	def ++(that: CatenableList[T]): CatenableList[T] = {
-		require(this.hasProperShape && that.hasProperShape)
+		//require(this.hasProperShape && that.hasProperShape)
 		(this, that) match {
 			case (CEmpty(), _) => that
 			case (_, CEmpty()) => this
 			case _ => this.link(that)
 		}
-	} ensuring(res => res.content == this.content ++ that.content && res.size == this.size + that.size)
+	} //ensuring(res => res.content == this.content ++ that.content && res.size == this.size + that.size)
 
 	def head: T = {
-		require(this.isDefined && this.hasProperShape)
+		//require(this.isDefined && this.hasProperShape)
 		this match {
 			case CCons(h, t) => h
 		}
-	} ensuring(res => this.contains(res))
+	} //ensuring(res => this.contains(res))
 
 
 	def tail: CatenableList[T] = {
-		require(this.isDefined && this.hasProperShape)
+		//require(this.isDefined && this.hasProperShape)
 		val res: CatenableList[T] = this match {
 			case CCons(h, t) if t.isEmpty => CEmpty()
 			case CCons(h, t) => CatenableList.linkAll(t)
 		}
 		res
-	} ensuring(res => (res.forall(this.contains(_)) || res == CEmpty[T]()) && res.size == this.size - 1)
+	} //ensuring(res => (res.forall(this.contains(_)) || res == CEmpty[T]()) && res.size == this.size - 1)
 
 	/* Structure transformation */
 
@@ -87,7 +87,7 @@ sealed abstract class CatenableList[T] {
 		case CCons(h, t) => 
 			val st1 = CatenableList.queueOfCatToList(t)
 			h :: st1
-	}; res} ensuring(res => res.content == this.content)
+	}; res} //ensuring(res => res.content == this.content)
 
 	/* high-level API */
 
@@ -105,11 +105,11 @@ sealed abstract class CatenableList[T] {
 	/* Helpers */
 
 	private def link(that: CatenableList[T]): CatenableList[T] = {
-		require(this.isDefined && this.hasProperShape && that.isDefined && that.hasProperShape)
+		//require(this.isDefined && this.hasProperShape && that.isDefined && that.hasProperShape)
 		this match {
 			case CCons(h, t) => CCons(h, t.snoc(that)) // TODO : p96 : "tree suspension"
 		}
-	} ensuring(res => res.content == this.content ++ that.content && res.size == this.size + that.size)
+	} //ensuring(res => res.content == this.content ++ that.content && res.size == this.size + that.size)
 
 	/* Invariants */
 
@@ -127,31 +127,31 @@ object CatenableList {
 	/* Helpers */
 
 	def linkAll[T](q: Queue[CatenableList[T]]): CatenableList[T] = {
-		require(q.isDefined && queueHasProperShapeIn(q))
+		//require(q.isDefined && queueHasProperShapeIn(q))
 		q.tail match {
 			case QEmpty() => q.head
 			case qTail => q.head.link(linkAll(qTail))
 		}
-	} ensuring(res => q.forall(_.forall(res.contains(_))) && res.size == q.size)
+	} //ensuring(res => q.forall(_.forall(res.contains(_))) && res.size == q.size)
 
 	def sumTail[T](q: Queue[CatenableList[T]]): BigInt = {
-		require(queueHasProperShapeIn(q))
+		//require(queueHasProperShapeIn(q))
 		val res: BigInt = q match {
 			case QEmpty() => 0
 			case QCons(f, r) => sumInList(f, 0) + sumInList(r, 0)
 		}
 		res
-	} ensuring(_ >= 0)
+	} //ensuring(_ >= 0)
 
 	/* TODO: there were problems with foldleft / flatMap in leon, so we use those functions instead */
 
 	private def sumInList[T](lst: List[CatenableList[T]], acc: BigInt): BigInt = {
-		require(lst.forall(_.hasProperShape) && acc >= 0)
+		//require(lst.forall(_.hasProperShape) && acc >= 0)
 		lst match {
 			case Nil() => acc
 			case Cons(h, t) => sumInList(t, acc + h.size)
 		}
-	} ensuring(_ >= 0)
+	} //ensuring(_ >= 0)
 
 	def queueOfCatToContent[T](q: Queue[CatenableList[T]]): Set[T] = q match {
 		case QEmpty() => Set()

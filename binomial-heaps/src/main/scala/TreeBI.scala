@@ -18,7 +18,7 @@ sealed abstract class TreeBI {
 				else TreeNode(r + 1, x2, BHList(Cons(this, 
 					c2 match {case BHList(f) => f})))
 		}
-	}
+	} ensuring (res => res.size == this.size + that.size) //TODO : more ?
 
 	def rank(): BigInt = this match {
 		case TreeNode(r, x, c) => r

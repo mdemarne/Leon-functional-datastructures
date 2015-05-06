@@ -16,7 +16,7 @@ object QueueSpec {
   def testSnoc {
       val Q1 = QEmpty[BigInt]()
       val Q2 = Q1.snoc(4)
-      assert(Q2.size == 1) //[Unit]("Wrong size!")
+      assert(Q2.size == 1)
   }	
   
   def testOrder1 {

@@ -11,30 +11,27 @@ import leon.collection._
 
 sealed abstract class BinomialHeap[T <: Ordered[T]] /*extends Test[T]*/ {
 
-	def isEmpty: Boolean = this == BHEmpty[T]()
-	def isDefined: Boolean = !this.isEmpty
-	def isFormallyOk: Boolean = this match {
-		case BHList(Cons(t2, Nil())) => false
-		case _ => true
+	def isEmpty: Boolean = this match {
+		case BHList(Nil()) => true
+		case _ => false
 	}
+	def isDefined: Boolean = !this.isEmpty
+
 	
 	def insert(x: T): BinomialHeap[T] = {
-		require(this.isFormallyOk)
-		this.insTree(TreeNode[T](0, x, BHEmpty()))
+		this.insTree(TreeNode[T](0, x, BHList(Nil())))
 	}
 	
 	def insTree(t1: Tree[T]): BinomialHeap[T] = {//ts: this
-		require(this.isFormallyOk)
 		this match {
+			case BHList(Nil()) => BHList[T](Cons(t1, Nil()))
 			case a @ BHList(Cons(t2, rest)) => {
 				if (t1.rank < t2.rank) BHList(Cons(t1, a.f))
 				else BHList(rest).insTree(t1.link(t2))
 			}
-			case BHEmpty() => BHList[T](Cons(t1, Nil()))
 		}
 	}
 	def merge(that: BinomialHeap[T]): BinomialHeap[T] = {
-		require(this.isFormallyOk && that.isFormallyOk)
 		(this, that) match {
 			case (BHList(t), BHList(Nil())) => BHList(t)
 			case (BHList(Nil()), BHList(t)) => BHList(t)
@@ -48,7 +45,7 @@ sealed abstract class BinomialHeap[T <: Ordered[T]] /*extends Test[T]*/ {
 		}
 	}
 	def findMin(): T = {
-		require(this.isDefined && this.isFormallyOk)
+		require(this.isDefined)
 		this match {
 			case BHList(Cons(t, Nil())) => t.root()
 			case BHList(Cons(t, ts)) => {
@@ -59,14 +56,14 @@ sealed abstract class BinomialHeap[T <: Ordered[T]] /*extends Test[T]*/ {
 		}
 	}
 	def deleteMin(): BinomialHeap[T] = {
-		require(this.isDefined && this.isFormallyOk)
+		require(this.isDefined)
 		this.getMin() match {
 			case (TreeNode(_, x, ts1), ts2) => 
 				ts1.reverse().merge( BHList(ts2))
 		}
 	}
 	def getMin(): (Tree[T], List[Tree[T]]) = {
-		require(this.isDefined && this.isFormallyOk)
+		require(this.isDefined)
 		this match {
 			case BHList(Cons(t, Nil())) => (t, Nil())
 			case BHList(Cons(t, ts)) => {
@@ -80,9 +77,7 @@ sealed abstract class BinomialHeap[T <: Ordered[T]] /*extends Test[T]*/ {
 		}
 	}
 	def reverse(): BinomialHeap[T] = {
-		require(this.isFormallyOk)
 		this match {
-			case BHEmpty() => this
 			case BHList(f) => BHList(f.reverse)
 		}
 	}
@@ -94,6 +89,5 @@ sealed abstract class BinomialHeap[T <: Ordered[T]] /*extends Test[T]*/ {
 }
 
 case class BHList[T <: Ordered[T]](f : List[Tree[T]]) extends BinomialHeap[T] //with Test[T]
-case class BHEmpty[T <: Ordered[T]]() extends BinomialHeap[T] //with Test[T] { val f = Nil[Tree[T]]() }
 
 //trait Test[T <: Ordered[T]] {val f: List[Tree[T]]}

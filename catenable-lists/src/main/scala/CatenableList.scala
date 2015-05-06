@@ -77,9 +77,9 @@ sealed abstract class CatenableList[T] {
 		case CEmpty() => Set()
 		case CCons(h, t) =>
 			// TODO: remove the val once inlinine issue resolved
-			Set[T](h) ++ (t.toList.flatMap[T](_.toList)).content
-			//val st1 = CatenableList.queueOfCatToContent(t)
-			//Set(h) ++ st1
+			//Set[T](h) ++ (t.toList.flatMap[T](_.toList)).content
+			val st1 = CatenableList.queueOfCatToContent(t)
+			Set(h) ++ st1
 	}
 
 	def toList: List[T] = { val res: List[T] = this match {

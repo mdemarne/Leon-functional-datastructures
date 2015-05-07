@@ -77,10 +77,14 @@ sealed abstract class Queue[T] {
 
 	/* Structure transformation */
 
-	def toList: List[T] = { val res: List[T] = this match {
-		case QEmpty() => Nil()
-		case QCons(f, r) => f ++ r.reverse
-	}; res} ensuring (res => this.content == res.content && res.size == this.size && res.size >= 0)
+	def toList: List[T] = {
+		require(this.hasProperShape)
+		val res: List[T] = this match {
+			case QEmpty() => Nil()
+			case QCons(f, r) => f ++ r.reverse
+		}
+	 	res
+	 } ensuring (res => this.content == res.content && res.size == this.size && res.size >= 0)
 
 
 	def content: Set[T] = this match {
@@ -90,10 +94,14 @@ sealed abstract class Queue[T] {
 
 	/* Higher-order API */
 
-	def map[R](func: T => R): Queue[R] = {val res: Queue[R] = this match {
-		case QEmpty() => QEmpty()
-		case QCons(f, r) => QCons(f.map(func(_)), r.map(func(_)))
-	}; res} ensuring (_.size == this.size)
+	def map[R](func: T => R): Queue[R] = {
+		require(this.hasProperShape)
+		val res: Queue[R] = this match {
+			case QEmpty() => QEmpty()
+			case QCons(f, r) => QCons(f.map(func(_)), r.map(func(_)))
+		}
+		res
+	} ensuring (_.size == this.size)
 
 	def forall(func: T => Boolean): Boolean = this match {
 		case QEmpty() => true /* Default, as in Scala standards */

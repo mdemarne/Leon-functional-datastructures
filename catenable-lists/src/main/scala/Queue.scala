@@ -105,6 +105,12 @@ sealed abstract class Queue[T] {
 		case QCons(f, r) => f.exists(func(_)) || r.exists(func(_))
 	}
 
+	// TODO: uncomment once problem with foldLeft resolved
+	/*def foldLeft[R](z: R)(func: (R, T) => R): R = this match {
+		case QEmpty() => z
+		case q => q.tail.foldLeft(func(z,q.head))(func)
+	}*/
+
 	/* Invariants */
 
 	def hasProperShape = this match {

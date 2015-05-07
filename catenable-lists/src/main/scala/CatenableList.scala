@@ -76,17 +76,19 @@ sealed abstract class CatenableList[T] {
 	def content: Set[T] = this match {
 		case CEmpty() => Set()
 		case CCons(h, t) =>
-			// TODO: remove the val once inlinine issue resolved
-			//Set[T](h) ++ (t.toList.flatMap[T](_.toList)).content
-			val st1 = CatenableList.queueOfCatToContent(t)
-			Set(h) ++ st1
+			// DONE: flatMap problem has been resolved.
+			// val st1 = CatenableList.queueOfCatToContent(t)
+			// Set(h) ++ st1
+			Set(h) ++ (t.toList.flatMap(_.toList)).content
 	}
 
 	def toList: List[T] = { val res: List[T] = this match {
 		case CEmpty() => Nil()
 		case CCons(h, t) => 
-			val st1 = CatenableList.queueOfCatToList(t)
-			h :: st1
+			// DONE: flatMap problem has been resolved.
+			// val st1 = CatenableList.queueOfCatToList(t)
+			// h :: st1
+			h :: (t.toList.flatMap(_.toList))
 	}; res} ensuring(res => res.content == this.content)
 
 	/* high-level API */
@@ -153,6 +155,9 @@ object CatenableList {
 		}
 	} ensuring(_ >= 0)
 
+	// DONE: flatMap problem has been resolved. The functions belows where used instead of flatmap on lists. We
+	// keep them here for the record
+	/*
 	def queueOfCatToContent[T](q: Queue[CatenableList[T]]): Set[T] = q match {
 		case QEmpty() => Set()
 		case QCons(l, r) => listOfCatToContent(l) ++ listOfCatToContent(r)
@@ -172,6 +177,7 @@ object CatenableList {
 		case Nil() => Nil()
 		case Cons(h, t) => h.toList ++ listOfCatToList(t)
 	}
+	*/
 
 	/* Invariants */
 

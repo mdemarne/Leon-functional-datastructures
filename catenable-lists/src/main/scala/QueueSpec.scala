@@ -16,7 +16,7 @@ object QueueSpec {
   def testSnoc {
       val Q1 = QEmpty[BigInt]()
       val Q2 = Q1.snoc(4)
-      assert(Q2.size == 1) //[Unit]("Wrong size!")
+      assert(Q2.size == 1)
   }	
   
   def testOrder1 {
@@ -49,6 +49,15 @@ object QueueSpec {
 	  val Q4 = Q3.tail
 	  val listQ4: List[BigInt] = Cons(4, Cons(5, Nil()))
 	  assert(Q4.toList.content == listQ4.content && isSorted(Q4.toList)) 
+  }
+
+  def testHead {
+  	val Q1 = QCons[BigInt](Cons(1, Cons(2, Cons(3, Nil()))), Cons(5, Cons(4, Nil())))
+  	assert(Q1.head == 1)
+  	assert(Q1.tail.head == 2)
+  	assert(Q1.tail.tail.head == 3)
+  	assert(Q1.tail.tail.tail.head == 4)
+  	assert(Q1.tail.tail.tail.tail.head == 5)
   }
 
 }

@@ -35,7 +35,7 @@ sealed abstract class CatenableList[T] {
 			case CCons(h, t) => 
 				// TODO: use foldLeft once the problem with the solver infering different values for x and y resolved)
 				1 + CatenableList.sumTail(t)
-				//1 + t.foldLeft(BigInt(0))((x, y) => x + y.size)
+				// 1 + t.foldLeft(BigInt(0))((x, y) => x + y.size)
 		}
 		res
 	} ensuring (_ >= 0)
@@ -85,9 +85,8 @@ sealed abstract class CatenableList[T] {
 			case CCons(h, t) =>
 				// DONE: flatMap problem has been resolved.
 				// TODO: to be able to prove stuffs with flatMap, it seems that some things are missing (it breaks the recursion), or there is an error in the solver.
-				val st1 = CatenableList.queueOfCatToContent(t)
-				Set(h) ++ st1
 				// Set(h) ++ (t.toList.flatMap(_.toList)).content
+				Set(h) ++  CatenableList.queueOfCatToContent(t)
 		}
 		res
 	}
@@ -99,9 +98,8 @@ sealed abstract class CatenableList[T] {
 			case CCons(h, t) => 
 				// DONE: flatMap problem has been resolved.
 				// TODO: to be able to prove stuffs with flatMap, it seems that some things are missing (it breaks the recursion), or there is an error in the solver.
-				val st1 = CatenableList.queueOfCatToList(t)
-				h :: st1
 				// h :: (t.toList.flatMap(_.toList))
+				h ::  CatenableList.queueOfCatToList(t)
 		}
 		res
 	} ensuring(res => res.content == this.content)

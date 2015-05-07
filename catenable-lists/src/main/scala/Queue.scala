@@ -19,6 +19,8 @@ object QueueOps {
 	}
 }*/
 
+// TODO: solve preconditions for flatMap.
+
 sealed abstract class Queue[T] {
 
 	/* Lower-level API */
@@ -87,9 +89,12 @@ sealed abstract class Queue[T] {
 	 } ensuring (res => this.content == res.content && res.size == this.size && res.size >= 0)
 
 
-	def content: Set[T] = this match {
-		case QEmpty() => Set()
-		case QCons(f, r) => f.content ++ r.content
+	def content: Set[T] = {
+		require(this.hasProperShape)
+		this match {
+			case QEmpty() => Set()
+			case QCons(f, r) => f.content ++ r.content
+		}
 	}
 
 	/* Higher-order API */
@@ -103,6 +108,16 @@ sealed abstract class Queue[T] {
 		res
 	} ensuring (_.size == this.size)
 
+	// TODO: to use flatMap, we need to ensure that the queue returned by func has a proper shape.
+	/*def flatMap[R](func: T => Queue[R]): Queue[R] =  {
+		require(this.hasProperShape)
+		val res: Queue[R] = this match {
+			case QEmpty() => QEmpty()
+			case q => func(q.head) ++ q.tail.flatMap(func)
+		}
+		res
+	} ensuring (res => res.hasProperShape)*/
+
 	def forall(func: T => Boolean): Boolean = this match {
 		case QEmpty() => true /* Default, as in Scala standards */
 		case QCons(f, r) => f.forall(func(_)) && r.forall(func(_))
@@ -113,11 +128,13 @@ sealed abstract class Queue[T] {
 		case QCons(f, r) => f.exists(func(_)) || r.exists(func(_))
 	}
 
-	// TODO: uncomment once problem with foldLeft resolved
-	/*def foldLeft[R](z: R)(func: (R, T) => R): R = this match {
-		case QEmpty() => z
-		case q => q.tail.foldLeft(func(z,q.head))(func)
-	}*/
+	def foldLeft[R](z: R)(func: (R, T) => R): R = {
+		require(this.hasProperShape)
+		this match {
+			case QEmpty() => z
+			case q => q.tail.foldLeft(func(z,q.head))(func)
+		}
+	}
 
 	/* Invariants */
 

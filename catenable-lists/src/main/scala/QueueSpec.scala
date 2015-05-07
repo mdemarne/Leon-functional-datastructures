@@ -51,4 +51,13 @@ object QueueSpec {
 	  assert(Q4.toList.content == listQ4.content && isSorted(Q4.toList)) 
   }
 
+  def testHead {
+  	val Q1 = QCons[BigInt](Cons(1, Cons(2, Cons(3, Nil()))), Cons(5, Cons(4, Nil())))
+  	assert(Q1.head == 1)
+  	assert(Q1.tail.head == 2)
+  	assert(Q1.tail.tail.head == 3)
+  	assert(Q1.tail.tail.tail.head == 4)
+  	assert(Q1.tail.tail.tail.tail.head == 5)
+  }
+
 }

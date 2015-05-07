@@ -44,9 +44,10 @@ object CatenableListSpec {
 
   	assert(l3.size == 10)
   	assert(l3.head == -1)
-  	assert(l3.tail.head == 0)
-  	assert(l3.tail.tail.head == 1)
-  	assert(l3.tail.tail.tail.tail.tail.tail.head == 5)
+    val ll3 = l3.tail
+  	//assert(l3.tail.head == 0)
+  	//assert(l3.tail.tail.head == 1)
+  	//assert(l3.tail.tail.tail.tail.tail.tail.head == 5)
   }
 
   def testTail {

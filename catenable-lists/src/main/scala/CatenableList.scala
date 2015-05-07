@@ -17,6 +17,8 @@ import leon.collection._
 
  // DONE: comparisons of contents of sets in ensuring makes java exception
  //		=> problem came from the use of flatMaps. Using recursive functions instead.
+ // DONE: solving issue with flatMap and foldLeft with Etienne (problem Leon-side on types)
+ // TODO: solve preconditions for flatMap.
 
 sealed abstract class CatenableList[T] {
 
@@ -30,7 +32,10 @@ sealed abstract class CatenableList[T] {
 		require(this.hasProperShape)
 		val res: BigInt = this match {
 			case CEmpty() => 0
-			case CCons(h, t) => 1 + CatenableList.sumTail(t)
+			case CCons(h, t) => 
+				// TODO: use foldLeft once the problem with the solver infering different values for x and y resolved)
+				1 + CatenableList.sumTail(t)
+				// 1 + t.foldLeft(BigInt(0))((x, y) => x + y.size)
 		}
 		res
 	} ensuring (_ >= 0)
@@ -73,23 +78,31 @@ sealed abstract class CatenableList[T] {
 
 	/* Structure transformation */
 
-	def content: Set[T] = this match {
-		case CEmpty() => Set()
-		case CCons(h, t) =>
-			// DONE: flatMap problem has been resolved.
-			// val st1 = CatenableList.queueOfCatToContent(t)
-			// Set(h) ++ st1
-			Set(h) ++ (t.toList.flatMap(_.toList)).content
+	def content: Set[T] = {
+		require(this.hasProperShape)
+		val res: Set[T] = this match {
+			case CEmpty() => Set()
+			case CCons(h, t) =>
+				// DONE: flatMap problem has been resolved.
+				// TODO: to be able to prove stuffs with flatMap, it seems that some things are missing (it breaks the recursion), or there is an error in the solver.
+				// Set(h) ++ (t.toList.flatMap(_.toList)).content
+				Set(h) ++  CatenableList.queueOfCatToContent(t)
+		}
+		res
 	}
 
-	def toList: List[T] = { val res: List[T] = this match {
-		case CEmpty() => Nil()
-		case CCons(h, t) => 
-			// DONE: flatMap problem has been resolved.
-			// val st1 = CatenableList.queueOfCatToList(t)
-			// h :: st1
-			h :: (t.toList.flatMap(_.toList))
-	}; res} ensuring(res => res.content == this.content)
+	def toList: List[T] = {
+		require(this.hasProperShape)
+		val res: List[T] = this match {
+			case CEmpty() => Nil()
+			case CCons(h, t) => 
+				// DONE: flatMap problem has been resolved.
+				// TODO: to be able to prove stuffs with flatMap, it seems that some things are missing (it breaks the recursion), or there is an error in the solver.
+				// h :: (t.toList.flatMap(_.toList))
+				h ::  CatenableList.queueOfCatToList(t)
+		}
+		res
+	} ensuring(res => res.content == this.content)
 
 	/* high-level API */
 
@@ -134,7 +147,9 @@ object CatenableList {
 			case QEmpty() => q.head
 			case qTail => q.head.link(linkAll(qTail))
 		}
-	} ensuring(res => q.forall(_.forall(res.contains(_))) && res.size == q.size)
+	} ensuring(res => q.forall(_.forall(res.contains(_))))
+
+	// TODO: comment once the problem with the solver on foldLeft resolved.
 
 	def sumTail[T](q: Queue[CatenableList[T]]): BigInt = {
 		require(queueHasProperShapeIn(q))
@@ -145,8 +160,6 @@ object CatenableList {
 		res
 	} ensuring(_ >= 0)
 
-	/* TODO: there were problems with foldleft / flatMap in leon, so we use those functions instead */
-
 	private def sumInList[T](lst: List[CatenableList[T]], acc: BigInt): BigInt = {
 		require(lst.forall(_.hasProperShape) && acc >= 0)
 		lst match {
@@ -155,29 +168,40 @@ object CatenableList {
 		}
 	} ensuring(_ >= 0)
 
-	// DONE: flatMap problem has been resolved. The functions belows where used instead of flatmap on lists. We
-	// keep them here for the record
-	/*
-	def queueOfCatToContent[T](q: Queue[CatenableList[T]]): Set[T] = q match {
-		case QEmpty() => Set()
-		case QCons(l, r) => listOfCatToContent(l) ++ listOfCatToContent(r)
+	// DONE: flatMap problem has been resolved.
+	// TODO: comment those function once the problems with flatMap added (see above, content and toList)
+	
+	def queueOfCatToContent[T](q: Queue[CatenableList[T]]): Set[T] =  {
+		require(queueHasProperShapeIn(q))
+		q match {
+			case QEmpty() => Set()
+			case QCons(l, r) => listOfCatToContent(l) ++ listOfCatToContent(r)
+		}
 	}
 
-	private def listOfCatToContent[T](l: List[CatenableList[T]]): Set[T] = l match {
-		case Nil() => Set()
-		case Cons(h, t) => h.content ++ listOfCatToContent(t)
+	private def listOfCatToContent[T](l: List[CatenableList[T]]): Set[T] = {
+		require(l.forall(_.hasProperShape))
+		l match {
+			case Nil() => Set()
+			case Cons(h, t) => h.content ++ listOfCatToContent(t)
+		}
 	}
 
-	def queueOfCatToList[T](q: Queue[CatenableList[T]]): List[T] = q match {
-		case QEmpty() => Nil()
-		case QCons(l, r) => listOfCatToList(l) ++ listOfCatToList(r)
+	def queueOfCatToList[T](q: Queue[CatenableList[T]]): List[T] = {
+		require(queueHasProperShapeIn(q))
+		q match {
+			case QEmpty() => Nil()
+			case QCons(l, r) => listOfCatToList(l) ++ listOfCatToList(r)
+		}
 	}
 
-	private def listOfCatToList[T](l: List[CatenableList[T]]): List[T] = l match {
-		case Nil() => Nil()
-		case Cons(h, t) => h.toList ++ listOfCatToList(t)
+	private def listOfCatToList[T](l: List[CatenableList[T]]): List[T] = {
+		require(l.forall(_.hasProperShape))
+		l match {
+			case Nil() => Nil()
+			case Cons(h, t) => h.toList ++ listOfCatToList(t)
+		}
 	}
-	*/
 
 	/* Invariants */
 

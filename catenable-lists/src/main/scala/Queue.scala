@@ -19,6 +19,8 @@ object QueueOps {
 	}
 }*/
 
+// TODO: solve preconditions for flatMap.
+
 sealed abstract class Queue[T] {
 
 	/* Lower-level API */
@@ -34,7 +36,7 @@ sealed abstract class Queue[T] {
 			case QCons(f, r) => f.size + r.size
 		}
 		res
-	} ensuring (res => res == this.toList.size && res >= 0)
+	} ensuring (_ >= 0)
 
 	def head: T = {
 		require(this.isDefined && this.hasProperShape)
@@ -77,23 +79,44 @@ sealed abstract class Queue[T] {
 
 	/* Structure transformation */
 
-	def toList: List[T] = { val res: List[T] = this match {
-		case QEmpty() => Nil()
-		case QCons(f, r) => f ++ r.reverse
-	}; res} ensuring (res => this.content == res.content && res.size == this.size && res.size >= 0)
+	def toList: List[T] = {
+		require(this.hasProperShape)
+		val res: List[T] = this match {
+			case QEmpty() => Nil()
+			case QCons(f, r) => f ++ r.reverse
+		}
+	 	res
+	 } ensuring (res => this.content == res.content && res.size == this.size && res.size >= 0)
 
 
-	def content: Set[T] = {val res: Set[T] = this match {
-		case QEmpty() => Set()
-		case QCons(f, r) => f.content ++ r.content
-	}; res} ensuring (res => res == this.toList.content)
+	def content: Set[T] = {
+		require(this.hasProperShape)
+		this match {
+			case QEmpty() => Set()
+			case QCons(f, r) => f.content ++ r.content
+		}
+	}
 
 	/* Higher-order API */
 
-	def map[R](func: T => R): Queue[R] = {val res: Queue[R] = this match {
-		case QEmpty() => QEmpty()
-		case QCons(f, r) => QCons(f.map(func(_)), r.map(func(_)))
-	}; res} ensuring (_.size == this.size)
+	def map[R](func: T => R): Queue[R] = {
+		require(this.hasProperShape)
+		val res: Queue[R] = this match {
+			case QEmpty() => QEmpty()
+			case QCons(f, r) => QCons(f.map(func(_)), r.map(func(_)))
+		}
+		res
+	} ensuring (_.size == this.size)
+
+	// TODO: to use flatMap, we need to ensure that the queue returned by func has a proper shape.
+	/*def flatMap[R](func: T => Queue[R]): Queue[R] =  {
+		require(this.hasProperShape)
+		val res: Queue[R] = this match {
+			case QEmpty() => QEmpty()
+			case q => func(q.head) ++ q.tail.flatMap(func)
+		}
+		res
+	} ensuring (res => res.hasProperShape)*/
 
 	def forall(func: T => Boolean): Boolean = this match {
 		case QEmpty() => true /* Default, as in Scala standards */
@@ -103,6 +126,14 @@ sealed abstract class Queue[T] {
 	def exists(func: T => Boolean): Boolean = this match {
 		case QEmpty() => false
 		case QCons(f, r) => f.exists(func(_)) || r.exists(func(_))
+	}
+
+	def foldLeft[R](z: R)(func: (R, T) => R): R = {
+		require(this.hasProperShape)
+		this match {
+			case QEmpty() => z
+			case q => q.tail.foldLeft(func(z,q.head))(func)
+		}
 	}
 
 	/* Invariants */

@@ -40,7 +40,11 @@ sealed abstract class TreeBI {
 		}
 	} ensuring (res => /*this.content == res.content &&*/ res.size == this.size && res.size >= 0)
 
-	//def content: Set[T] = {???} ensuring (res => res == this.toList.content /*&& res.size == this.toList.size*/)
+	def content: Set[BigInt] = {
+		this match {
+			case TreeNode(r, x, c) => Set(r) ++ c.content
+		}
+	} ensuring (res => res == this.toList.content)
 
 }
 

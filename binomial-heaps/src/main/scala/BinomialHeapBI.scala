@@ -116,7 +116,12 @@ sealed abstract class BinomialHeapBI {
 		}
 	} ensuring (res => /*this.content == res.content &&*/ res.size == this.size && res.size >= 0)
 
-	//def content: Set[T] = {???} ensuring (res => res == this.toList.content /*&& res.size == this.toList.size*/)
+	def content: Set[BigInt] = {
+		this match {
+			case BHList(Nil()) => Set()
+			case BHList(Cons(t, ts)) => t.content ++ BHList(ts).content
+		}
+	} ensuring (res => res == this.toList.content)
 
 }
 

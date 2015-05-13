@@ -19,7 +19,7 @@ sealed abstract class BinomialHeapBI {
 
 	def insert(x: BigInt): BinomialHeapBI = {
 		this.insTree(TreeNode(0, x, BHList(Nil())))
-	} ensuring (res => res.size == this.size + 1) //TODO : more ?
+	} ensuring (res => res.size == this.size + 1 && res.content == Set(x) ++ this.content)
 
 	def insTree(t1: TreeBI): BinomialHeapBI = {//ts: this
 		this match {
@@ -29,7 +29,7 @@ sealed abstract class BinomialHeapBI {
 				else BHList(rest).insTree(t1.link(t2))
 			}
 		}
-	} ensuring (res => res.size == this.size + t1.size) //TODO : more ?
+	} ensuring (res => res.size == this.size + t1.size && res.content == this.content ++ t1.content)
 
 	def merge(that: BinomialHeapBI): BinomialHeapBI = {
 		(this, that) match {
@@ -43,7 +43,7 @@ sealed abstract class BinomialHeapBI {
 				else BHList(ts1).merge(BHList(ts2)).insTree(t1.link(t2))
 			}
 		}
-	} ensuring (res => res.size == this.size + that.size) //TODO : more ?
+	} ensuring (res => res.size == this.size + that.size && res.content == this.content ++ that.content)
 
 	def findMin(): BigInt = {
 		require(this.isDefined)
@@ -55,12 +55,12 @@ sealed abstract class BinomialHeapBI {
 				if (x <= y) x else y
 			}
 		}
-	} //ensuring () //TODO
+	} ensuring(res => this.content.contains(res))
 
 	def deleteMin(): BinomialHeapBI = {
 		require(this.isDefined)
 		this.getAndDeleteMin()._2
-	} ensuring (res => res.size == this.size - 1) //TODO : more ?
+	} ensuring (res => res.size == this.size - 1)
 
 	def getAndDeleteMin(): (BigInt, BinomialHeapBI) = {
 		require(this.isDefined)
@@ -68,7 +68,7 @@ sealed abstract class BinomialHeapBI {
 			case (TreeNode(_, x, ts1), ts2) => 
 				(x, ts1.reverse().merge( BHList(ts2)))
 		}
-	} ensuring (res => res._2.size == this.size - 1) //TODO : more ?
+	} ensuring (res => res._2.size == this.size - 1)
 
 	def getMin(): (TreeBI, List[TreeBI]) = {
 		require(this.isDefined)
@@ -83,20 +83,20 @@ sealed abstract class BinomialHeapBI {
 				}
 			}
 		}
-	} //ensuring () //TODO
+	} // ensuring() //TODO
 
 	def reverse(): BinomialHeapBI = {
 		this match {
 			case BHList(f) => BHList(f.reverse)
 		}
-	} ensuring (res => res.size == this.size)
+	} ensuring (res => res.size == this.size && res.content == this.content)
 
 	def size: BigInt = {
 		this match {
 			case BHList(Nil()) => 0
 			case BHList(f) => sumInList(f, 0)
 		}
-	} ensuring (res => /*res == this.toList.size &&*/ res >= 0)
+	} ensuring (res => res >= 0)
 
 	private def sumInList[T](lst: List[TreeBI], acc: BigInt): BigInt = {
 		require(acc >= 0)
@@ -114,7 +114,7 @@ sealed abstract class BinomialHeapBI {
 				Cons(min, restBI.toList)
 			}
 		}
-	} ensuring (res => /*this.content == res.content &&*/ res.size == this.size && res.size >= 0)
+	} ensuring (res => res.size == this.size && res.size >= 0)
 
 	def content: Set[BigInt] = {
 		this match {

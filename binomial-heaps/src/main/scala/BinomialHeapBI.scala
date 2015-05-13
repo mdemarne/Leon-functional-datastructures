@@ -59,11 +59,16 @@ sealed abstract class BinomialHeapBI {
 
 	def deleteMin(): BinomialHeapBI = {
 		require(this.isDefined)
+		this.getAndDeleteMin()._2
+	} ensuring (res => res.size == this.size - 1) //TODO : more ?
+
+	def getAndDeleteMin(): (BigInt, BinomialHeapBI) = {
+		require(this.isDefined)
 		this.getMin() match {
 			case (TreeNode(_, x, ts1), ts2) => 
-				ts1.reverse().merge( BHList(ts2))
+				(x, ts1.reverse().merge( BHList(ts2)))
 		}
-	} ensuring (res => res.size == this.size - 1) //TODO : more ?
+	} ensuring (res => res._2.size == this.size - 1) //TODO : more ?
 
 	def getMin(): (TreeBI, List[TreeBI]) = {
 		require(this.isDefined)
@@ -101,7 +106,16 @@ sealed abstract class BinomialHeapBI {
 		}
 	} ensuring(_ >= 0)
 
-	//def toList: List[T] = {???} ensuring (res => this.content == res.content && res.size == this.size && res.size >= 0)
+	def toList: List[BigInt] = {
+		this match {
+			case BHList(Nil()) => Nil()
+			case a @ BHList(f) => {
+				val (min, restBI) = a.getAndDeleteMin()
+				Cons(min, restBI.toList)
+			}
+		}
+	} ensuring (res => /*this.content == res.content &&*/ res.size == this.size && res.size >= 0)
+
 	//def content: Set[T] = {???} ensuring (res => res == this.toList.content /*&& res.size == this.toList.size*/)
 
 }

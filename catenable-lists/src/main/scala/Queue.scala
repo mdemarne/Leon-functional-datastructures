@@ -9,18 +9,6 @@ import leon.collection._
  * @author Mathieu Demarne
  */
 
-
-/* TODO: Not sure that defining flatten is the best solution
-object QueueOps {
-	def flatten[T](que: Queue[Queue[T]]): Queue[T] = que match {
-		require(que.hasProperShape && que.forall(_.hasProperShape))
-		case QEmpty() => QEmpty()
-		case QCons(f, r) => ???
-	}
-}*/
-
-// TODO: solve preconditions for flatMap.
-
 sealed abstract class Queue[T] {
 
 	/* Lower-level API */
@@ -63,7 +51,7 @@ sealed abstract class Queue[T] {
 		}
 	} ensuring (res => res.isDefined && res.hasProperShape && res.size - 1 == this.size)
 
-	// TODO: check if required
+	/* This is not in the specification, but we implemented it anyway for testing purposes */
 	def ++(that: Queue[T]): Queue[T] = {
 		require(this.hasProperShape && that.hasProperShape)
 		(this, that) match {
@@ -108,7 +96,8 @@ sealed abstract class Queue[T] {
 		res
 	} ensuring (_.size == this.size)
 
-	// TODO: to use flatMap, we need to ensure that the queue returned by func has a proper shape.
+	// TODO: to use flatMap, we need to ensure that the queue returned by func has a proper shape. 
+	// Unfortunateyl, there is no way for now to do that properly using Leon.
 	/*def flatMap[R](func: T => Queue[R]): Queue[R] =  {
 		require(this.hasProperShape)
 		val res: Queue[R] = this match {

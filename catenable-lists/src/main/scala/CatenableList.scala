@@ -18,7 +18,8 @@ import leon.collection._
  // DONE: comparisons of contents of sets in ensuring makes java exception
  //		=> problem came from the use of flatMaps. Using recursive functions instead.
  // DONE: solving issue with flatMap and foldLeft with Etienne (problem Leon-side on types)
- // TODO: solve preconditions for flatMap.
+ // TODO: flatMaps and foldLefts are not suited for proof verification due to closures, which
+ // have no precondition.
 
 sealed abstract class CatenableList[T] {
 
@@ -33,9 +34,9 @@ sealed abstract class CatenableList[T] {
 		val res: BigInt = this match {
 			case CEmpty() => 0
 			case CCons(h, t) => 
-				// TODO: use foldLeft once the problem with the solver infering different values for x and y resolved)
-				1 + CatenableList.sumTail(t)
+				// TODO: It would be nice to use foldLeft, but due to closures, we can't do it directly.
 				// 1 + t.foldLeft(BigInt(0))((x, y) => x + y.size)
+				1 + CatenableList.sumTail(t)
 		}
 		res
 	} ensuring (_ >= 0)
@@ -83,8 +84,7 @@ sealed abstract class CatenableList[T] {
 		val res: Set[T] = this match {
 			case CEmpty() => Set()
 			case CCons(h, t) =>
-				// DONE: flatMap problem has been resolved.
-				// TODO: to be able to prove stuffs with flatMap, it seems that some things are missing (it breaks the recursion), or there is an error in the solver.
+				// TODO: It would be nice to use flatMap, but due to closures, we can't do it directly.
 				// Set(h) ++ (t.toList.flatMap(_.toList)).content
 				Set(h) ++  CatenableList.queueOfCatToContent(t)
 		}
@@ -96,8 +96,7 @@ sealed abstract class CatenableList[T] {
 		val res: List[T] = this match {
 			case CEmpty() => Nil()
 			case CCons(h, t) => 
-				// DONE: flatMap problem has been resolved.
-				// TODO: to be able to prove stuffs with flatMap, it seems that some things are missing (it breaks the recursion), or there is an error in the solver.
+				// TODO: It would be nice to use flatMap, but due to closures, we can't do it directly.
 				// h :: (t.toList.flatMap(_.toList))
 				h ::  CatenableList.queueOfCatToList(t)
 		}
@@ -149,8 +148,6 @@ object CatenableList {
 		}
 	} ensuring(res => q.forall(_.forall(res.contains(_))))
 
-	// TODO: comment once the problem with the solver on foldLeft resolved.
-
 	def sumTail[T](q: Queue[CatenableList[T]]): BigInt = {
 		require(queueHasProperShapeIn(q))
 		val res: BigInt = q match {
@@ -167,9 +164,6 @@ object CatenableList {
 			case Cons(h, t) => sumInList(t, acc + h.size)
 		}
 	} ensuring(_ >= 0)
-
-	// DONE: flatMap problem has been resolved.
-	// TODO: comment those function once the problems with flatMap added (see above, content and toList)
 	
 	def queueOfCatToContent[T](q: Queue[CatenableList[T]]): Set[T] =  {
 		require(queueHasProperShapeIn(q))

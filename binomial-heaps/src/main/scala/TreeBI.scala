@@ -20,11 +20,11 @@ sealed abstract class TreeBI {
 		}
 	} ensuring (res => res.size == this.size + that.size) //TODO : more ?
 
-	def rank(): BigInt = this match {
+	def rank: BigInt = this match {
 		case TreeNode(r, x, c) => r
 	}
 
-	def root(): BigInt = this match {
+	def root: BigInt = this match {
 		case TreeNode(r, x, c) => x
 	}
 

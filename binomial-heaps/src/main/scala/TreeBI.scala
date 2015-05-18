@@ -32,19 +32,19 @@ sealed abstract class TreeBI {
 		this match {
 			case TreeNode(r, x, c) => 1 + c.size
 		}
-	} ensuring (res => res >= 0)
+	} ensuring (_ >= 0)
 
 	def toList: List[BigInt] = {
 		this match {
 			case TreeNode(r, x, c) => Cons(r, c.toList)
 		}
-	} ensuring (res => res.size == this.size && res.size >= 0)
+	} ensuring (res => res.size == this.size)
 
 	def content: Set[BigInt] = {
 		this match {
-			case TreeNode(r, x, c) => Set(r) ++ c.content
+			case TreeNode(r, x, c) => Set(x) ++ c.content
 		}
-	} ensuring (res => res == this.toList.content)
+	}
 
 }
 

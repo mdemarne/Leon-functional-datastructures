@@ -59,14 +59,14 @@ sealed abstract class BinomialHeapBI {
 				if (x <= y) x else y
 			}
 		}
-	} ensuring(res => this.content.contains(res))
+	} ensuring(res => this.content.contains(res) && this.toList.forall(x => x >= res))
 
 	def deleteMin: BinomialHeapBI = {
 		require(this.isDefined)
-		this.getAndDeleteMin._2
+		this.findAndDeleteMin._2
 	} ensuring (res => res.size == this.size - 1)
 
-	def getAndDeleteMin: (BigInt, BinomialHeapBI) = {
+	def findAndDeleteMin: (BigInt, BinomialHeapBI) = {
 		require(this.isDefined)
 		this.getMin match {
 			case (TreeNode(_, x, ts1), ts2) => 
@@ -74,7 +74,7 @@ sealed abstract class BinomialHeapBI {
 		}
 	} ensuring (res => res._2.size == this.size - 1)
 
-	def getMin: (TreeBI, List[TreeBI]) = {
+	protected def getMin: (TreeBI, List[TreeBI]) = {
 		require(this.isDefined)
 		this match {
 			case BHList(Cons(t, Nil())) => (t, Nil())
@@ -87,9 +87,9 @@ sealed abstract class BinomialHeapBI {
 				}
 			}
 		}
-	} // ensuring() //TODO
+	} ensuring(res => BHList(res._2).toList.forall(x => x >= res._1.root))
 
-	def reverse: BinomialHeapBI = {
+	protected def reverse: BinomialHeapBI = {
 		this match {
 			case BHList(f) => BHList(f.reverse)
 		}
@@ -100,7 +100,7 @@ sealed abstract class BinomialHeapBI {
 			case BHList(Nil()) => 0
 			case BHList(f) => BinomialHeapBI.sumInList(f, 0)
 		}
-	} ensuring (res => res >= 0)
+	} ensuring (_ >= 0)
 
 	/* Structure transformation */
 
@@ -108,18 +108,18 @@ sealed abstract class BinomialHeapBI {
 		this match {
 			case BHList(Nil()) => Nil()
 			case a @ BHList(f) => {
-				val (min, restBI) = a.getAndDeleteMin
+				val (min, restBI) = a.findAndDeleteMin
 				Cons(min, restBI.toList)
 			}
 		}
-	} ensuring (res => res.size == this.size && res.size >= 0)
+	} ensuring (_.size == this.size)
 
 	def content: Set[BigInt] = {
 		this match {
 			case BHList(Nil()) => Set()
 			case BHList(Cons(t, ts)) => t.content ++ BHList(ts).content
 		}
-	} ensuring (res => res == this.toList.content)
+	}
 
 }
 

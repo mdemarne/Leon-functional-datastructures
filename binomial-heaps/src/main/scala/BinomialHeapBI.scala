@@ -12,6 +12,8 @@ import leon.collection._
 //to use T : add a mapping from T to BigInt
 
 sealed abstract class BinomialHeapBI {
+	//TODO from http://en.wikipedia.org/wiki/Binomial_heap:
+	//There can only be either one or zero binomial trees for each order, including zero order.
 
 	/* Lower-level API */
 
@@ -120,6 +122,13 @@ sealed abstract class BinomialHeapBI {
 			case BHList(Cons(t, ts)) => t.content ++ BHList(ts).content
 		}
 	}
+	
+	def forall(func: TreeBI => Boolean): Boolean = this match {
+		case BHList(Nil()) => true
+		case BHList(Cons(t, ts)) => func(t) && BHList(ts).forall(func(_))
+	}
+	
+	def minHeapPropBH: Boolean = this.forall(_.minHeapPropTree)
 
 }
 
@@ -139,6 +148,7 @@ object BinomialHeapBI {
 			case Cons(h, t) => sumInList(t, acc + h.size)
 		}
 	} ensuring(_ >= 0)
+	
 }
 
 case class BHList(f : List[TreeBI]) extends BinomialHeapBI

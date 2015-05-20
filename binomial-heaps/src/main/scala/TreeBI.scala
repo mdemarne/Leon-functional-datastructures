@@ -19,6 +19,14 @@ sealed abstract class TreeBI {
 					c2 match {case BHList(f) => f})))
 		}
 	} ensuring (res => res.size == this.size + that.size) //TODO : more ?
+	
+	
+	//TODO from http://en.wikipedia.org/wiki/Binomial_heap:
+	//Each binomial tree in a heap obeys the minimum-heap property: the key of a node is greater than or equal to the key of its parent.
+	def minHeapPropTree: Boolean = this match {
+		case TreeNode(r, x, BHList(Nil())) => true
+		case TreeNode(r, x, BHList(Cons(t, ts))) => t.minHeapPropTree && BHList(ts).minHeapPropBH
+	}
 
 	def rank: BigInt = this match {
 		case TreeNode(r, x, c) => r

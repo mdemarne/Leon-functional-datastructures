@@ -12,6 +12,7 @@ import leon.collection.ListOps._
  * @author Mathieu Demarne
  */
 
+// NOTE: Compile with SCALAC, not LEON
 object SpecRunner extends App {
 
 	println("Checking QueueSpec...")

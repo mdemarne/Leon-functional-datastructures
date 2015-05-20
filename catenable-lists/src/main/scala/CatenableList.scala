@@ -5,6 +5,7 @@ import leon.collection._
 
 /*
  * Implementation of Catenable List based on "Purely Functionnal Data Structure, Okasaki, P93+"
+ * Properties: efficient concatenation functions in O(1) (Snoc, Cons, ++)
  * @author Maëlle Colussi
  * @author Mathieu Demarne
  */

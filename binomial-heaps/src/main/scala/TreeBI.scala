@@ -19,13 +19,18 @@ sealed abstract class TreeBI {
 				else TreeNode(r + 1, x2, BHList(Cons(this, 
 					c2 match {case BHList(f) => f})))
 		}
-	} ensuring (res => res.size == this.size + that.size && res.minHeapPropTree) //TODO : more ?
+	} ensuring (res => res.size == this.size + that.size && res.minHeapPropTree)
 
 	//Each binomial tree in a heap obeys the minimum-heap property: 
 	//the key of a node is greater than or equal to the key of its parent.
 	def minHeapPropTree: Boolean = this match {
 		case TreeNode(r, x, BHList(Nil())) => true
 		case TreeNode(r, x, BHList(Cons(t, ts))) => t.minHeapPropTree && BHList(ts).minHeapPropBH
+	}
+	
+	def uniqueRankTree: Boolean = this match {
+		case TreeNode(r, x, BHList(Nil())) => r >= 0 && true
+		case TreeNode(r, x, BHList(f)) => r >= 0 && BHList(f).uniqueRanks
 	}
 
 	def rank: BigInt = this match {

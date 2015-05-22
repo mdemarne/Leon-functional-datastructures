@@ -37,6 +37,18 @@ sealed abstract class BinomialHeapBI {
 		}
 	} ensuring (res => res.size == this.size + t1.size && res.content == this.content ++ t1.content && res.minHeapPropBH && res.uniqueRanks)
 
+/*[  Info  ]  - Now considering 'precond. (call BHList($this.f.t).insTree(t1.link($ ...)' VC for BinomialHeapBI$insTree @35:38...
+[ Error  ]  => INVALID
+[ Error  ] Found counter-example:
+[ Error  ]   $this -> BHList(List[TreeBI](TreeNode(589, 1718, BHList(List[TreeBI]()))))
+[ Error  ]   t1    -> TreeNode(2241, 8855, BHList(List[TreeBI]()))
+[  Info  ]  - Now considering 'precond. (call t1.link($this.f.h))' VC for BinomialHeapBI$insTree @35:59...
+[ Error  ]  => INVALID
+[ Error  ] Found counter-example:
+[ Error  ]   $this -> BHList(List[TreeBI](TreeNode(9619, 1236, BHList(List[TreeBI]()))))
+[ Error  ]   t1    -> TreeNode(9620, 7719, BHList(List[TreeBI]()))
+timeout=4*/
+
 	def merge(that: BinomialHeapBI): BinomialHeapBI = {
 		require(this.minHeapPropBH && that.minHeapPropBH && this.uniqueRanks && that.uniqueRanks)
 		(this, that) match {

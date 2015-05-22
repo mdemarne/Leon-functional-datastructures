@@ -154,8 +154,7 @@ sealed abstract class BinomialHeapBI {
 		case BHList(Nil()) => true
 		case BHList(f) => {
 			val ranks = f.map(_.rank)
-			ranks.forall(x => !ranks.--(List(x)).contains(x)) && ranks.forall(_ >= 0) 
-				&& f.forall(_.uniqueRankTree)
+			ranks.forall(x => !ranks.--(List(x)).contains(x)) && ranks.forall(_ >= 0) && f.forall(_.uniqueRankTree)
 		}
 	}
 

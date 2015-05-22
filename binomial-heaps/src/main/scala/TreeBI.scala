@@ -11,6 +11,7 @@ import leon.collection._
 
 sealed abstract class TreeBI {
 	def link(that: TreeBI) : TreeBI = {//t1: this, t2:that
+		require(this.minHeapPropTree && that.minHeapPropTree)
 		(this, that) match {
 			case (TreeNode(r, x1, c1), TreeNode(_, x2, c2)) =>
 				if (x1 <= x2) TreeNode(r + 1, x1, BHList(Cons(that, 
@@ -18,11 +19,10 @@ sealed abstract class TreeBI {
 				else TreeNode(r + 1, x2, BHList(Cons(this, 
 					c2 match {case BHList(f) => f})))
 		}
-	} ensuring (res => res.size == this.size + that.size) //TODO : more ?
-	
-	
-	//TODO from http://en.wikipedia.org/wiki/Binomial_heap:
-	//Each binomial tree in a heap obeys the minimum-heap property: the key of a node is greater than or equal to the key of its parent.
+	} ensuring (res => res.size == this.size + that.size && res.minHeapPropTree) //TODO : more ?
+
+	//Each binomial tree in a heap obeys the minimum-heap property: 
+	//the key of a node is greater than or equal to the key of its parent.
 	def minHeapPropTree: Boolean = this match {
 		case TreeNode(r, x, BHList(Nil())) => true
 		case TreeNode(r, x, BHList(Cons(t, ts))) => t.minHeapPropTree && BHList(ts).minHeapPropBH

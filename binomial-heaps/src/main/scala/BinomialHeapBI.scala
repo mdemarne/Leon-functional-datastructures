@@ -24,10 +24,12 @@ sealed abstract class BinomialHeapBI {
 	def isDefined: Boolean = !this.isEmpty
 
 	def insert(x: BigInt): BinomialHeapBI = {
+		require(this.minHeapPropBH)
 		this.insTree(TreeNode(0, x, BHList(Nil())))
 	} ensuring (res => res.size == this.size + 1 && res.content == Set(x) ++ this.content)
 
 	protected def insTree(t1: TreeBI): BinomialHeapBI = {//ts: this
+		require(this.minHeapPropBH)
 		this match {
 			case BHList(Nil()) => BHList(Cons(t1, Nil()))
 			case a @ BHList(Cons(t2, rest)) => {
@@ -38,6 +40,7 @@ sealed abstract class BinomialHeapBI {
 	} ensuring (res => res.size == this.size + t1.size && res.content == this.content ++ t1.content)
 
 	def merge(that: BinomialHeapBI): BinomialHeapBI = {
+		require(this.minHeapPropBH && that.minHeapPropBH)
 		(this, that) match {
 			case (BHList(t), BHList(Nil())) => BHList(t)
 			case (BHList(Nil()), BHList(t)) => BHList(t)
@@ -52,7 +55,7 @@ sealed abstract class BinomialHeapBI {
 	} ensuring (res => res.size == this.size + that.size && res.content == this.content ++ that.content)
 
 	def findMin: BigInt = {
-		require(this.isDefined)
+		require(this.isDefined && this.minHeapPropBH)
 		this match {
 			case BHList(Cons(t, Nil())) => t.root
 			case BHList(Cons(t, ts)) => {
@@ -64,12 +67,12 @@ sealed abstract class BinomialHeapBI {
 	} ensuring(res => this.content.contains(res) && this.toList.forall(x => x >= res))
 
 	def deleteMin: BinomialHeapBI = {
-		require(this.isDefined)
+		require(this.isDefined && this.minHeapPropBH)
 		this.findAndDeleteMin._2
 	} ensuring (res => res.size == this.size - 1)
 
 	def findAndDeleteMin: (BigInt, BinomialHeapBI) = {
-		require(this.isDefined)
+		require(this.isDefined && this.minHeapPropBH)
 		this.getMin match {
 			case (TreeNode(_, x, ts1), ts2) => 
 				(x, ts1.reverse.merge( BHList(ts2)))
@@ -77,7 +80,7 @@ sealed abstract class BinomialHeapBI {
 	} ensuring (res => res._2.size == this.size - 1)
 
 	protected def getMin: (TreeBI, List[TreeBI]) = {
-		require(this.isDefined)
+		require(this.isDefined && this.minHeapPropBH)
 		this match {
 			case BHList(Cons(t, Nil())) => (t, Nil())
 			case BHList(Cons(t, ts)) => {
@@ -92,10 +95,11 @@ sealed abstract class BinomialHeapBI {
 	} ensuring(res => BHList(res._2).toList.forall(x => x >= res._1.root))
 
 	protected def reverse: BinomialHeapBI = {
+		require(this.minHeapPropBH)
 		this match {
 			case BHList(f) => BHList(f.reverse)
 		}
-	} ensuring (res => res.size == this.size && res.content == this.content)
+	} ensuring (res => res.size == this.size && res.content == this.content && res.minHeapPropBH)
 
 	def size: BigInt = {
 		this match {

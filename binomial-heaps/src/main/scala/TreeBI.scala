@@ -11,8 +11,7 @@ import leon.collection._
 
 sealed abstract class TreeBI {
 	def link(that: TreeBI) : TreeBI = {//t1: this, t2:that
-		require(this.minHeapPropTree && that.minHeapPropTree && 
-			this.uniqueRankTree && that.uniqueRankTree && this.rank == that.rank)
+		require(this.correctFormTree && that.correctFormTree && this.rank == that.rank)
 		(this, that) match {
 			case (TreeNode(r, x1, c1), TreeNode(r1, x2, c2)) if r == r1 =>
 				if (x1 <= x2) TreeNode(r + 1, x1, BHList(Cons(that, 
@@ -20,7 +19,7 @@ sealed abstract class TreeBI {
 				else TreeNode(r + 1, x2, BHList(Cons(this, 
 					c2 match {case BHList(f) => f})))
 		}
-	} ensuring (res => res.size == this.size + that.size && res.minHeapPropTree && res.uniqueRankTree)
+	} ensuring (res => res.size == this.size + that.size && res.correctFormTree)
 
 	def rank: BigInt = this match {
 		case TreeNode(r, x, c) => r
@@ -37,7 +36,7 @@ sealed abstract class TreeBI {
 	} ensuring (_ >= 0)
 
 	def toList: List[BigInt] = {
-		require(this.minHeapPropTree && this.uniqueRankTree )
+		require(this.correctFormTree)
 		this match {
 			case TreeNode(r, x, c) => Cons(r, c.toList)
 		}
@@ -50,6 +49,8 @@ sealed abstract class TreeBI {
 	}
 	
 	/* Invariants */
+	
+	def correctFormTree: Boolean = this.minHeapPropTree && this.uniqueRankTree
 
 	//Each binomial tree in a heap obeys the minimum-heap property: 
 	//the key of a node is greater than or equal to the key of its parent.

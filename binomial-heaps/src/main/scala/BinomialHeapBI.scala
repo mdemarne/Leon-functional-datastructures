@@ -109,6 +109,7 @@ sealed abstract class BinomialHeapBI {
 	/* Structure transformation */
 
 	def toList: List[BigInt] = {
+		require(this.minHeapPropBH && this.uniqueRanks)
 		this match {
 			case BHList(Nil()) => Nil()
 			case a @ BHList(f) => {
@@ -129,6 +130,8 @@ sealed abstract class BinomialHeapBI {
 		case BHList(Nil()) => true
 		case BHList(Cons(t, ts)) => func(t) && BHList(ts).forall(func(_))
 	}
+	
+	/* Invariants */
 	
 	def minHeapPropBH: Boolean = this.forall(_.minHeapPropTree)
 	

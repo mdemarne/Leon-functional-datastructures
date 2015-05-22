@@ -47,7 +47,7 @@ sealed abstract class BinomialHeapBI {
 [ Error  ] Found counter-example:
 [ Error  ]   $this -> BHList(List[TreeBI](TreeNode(9619, 1236, BHList(List[TreeBI]()))))
 [ Error  ]   t1    -> TreeNode(9620, 7719, BHList(List[TreeBI]()))
-timeout=4*/
+*/
 
 	def merge(that: BinomialHeapBI): BinomialHeapBI = {
 		require(this.minHeapPropBH && that.minHeapPropBH && this.uniqueRanks && that.uniqueRanks)
@@ -154,7 +154,7 @@ timeout=4*/
 		case BHList(Nil()) => true
 		case BHList(f) => {
 			val ranks = f.map(_.rank)
-			ranks.forall(x => !ranks.--(List(x)).contains(x)) && ranks.forall(_ >= 0)
+			ranks.forall(x => !ranks.--(List(x)).contains(x) && x.uniqueRankTree) && ranks.forall(_ >= 0)
 		}
 	}
 

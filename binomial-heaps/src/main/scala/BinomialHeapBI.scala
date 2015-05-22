@@ -27,7 +27,7 @@ sealed abstract class BinomialHeapBI {
 	} ensuring (res => res.size == this.size + 1 && res.content == Set(x) ++ this.content && res.minHeapPropBH && res.uniqueRanks)
 
 	protected def insTree(t1: TreeBI): BinomialHeapBI = {//ts: this
-		require(this.minHeapPropBH && this.uniqueRanks)
+		require(this.minHeapPropBH && this.uniqueRanks && t1.minHeapPropTree && t1.uniqueRankTree)
 		this match {
 			case BHList(Nil()) => BHList(Cons(t1, Nil()))
 			case a @ BHList(Cons(t2, rest)) => {
@@ -38,7 +38,7 @@ sealed abstract class BinomialHeapBI {
 	} ensuring (res => res.size == this.size + t1.size && res.content == this.content ++ t1.content && res.minHeapPropBH && res.uniqueRanks)
 
 	def merge(that: BinomialHeapBI): BinomialHeapBI = {
-		require(this.minHeapPropBH && that.minHeapPropBH && this.uniqueRanks)
+		require(this.minHeapPropBH && that.minHeapPropBH && this.uniqueRanks && that.uniqueRanks)
 		(this, that) match {
 			case (BHList(t), BHList(Nil())) => BHList(t)
 			case (BHList(Nil()), BHList(t)) => BHList(t)

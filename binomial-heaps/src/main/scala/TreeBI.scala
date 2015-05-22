@@ -55,11 +55,11 @@ sealed abstract class TreeBI {
 	//the key of a node is greater than or equal to the key of its parent.
 	def minHeapPropTree: Boolean = this match {
 		case TreeNode(r, x, BHList(Nil())) => true
-		case TreeNode(r, x, BHList(Cons(t, ts))) => t.minHeapPropTree && BHList(ts).minHeapPropBH
+		case TreeNode(r, x, BHList(f)) => f.forall(_.rank >= r) && BHList(f).minHeapPropBH
 	}
 	
 	def uniqueRankTree: Boolean = this match {
-		case TreeNode(r, x, BHList(Nil())) => r >= 0 && true
+		case TreeNode(r, x, BHList(Nil())) => r >= 0
 		case TreeNode(r, x, BHList(f)) => r >= 0 && BHList(f).uniqueRanks
 	}
 }

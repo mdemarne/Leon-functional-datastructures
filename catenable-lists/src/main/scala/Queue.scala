@@ -133,5 +133,14 @@ sealed abstract class Queue[T] {
 	}
 }
 
+/* Companion object */
+object Queue {
+
+	def empty[T] = QEmpty[T]()
+	// Ideally, this should be done using repeated, but it is not implemented in leon.
+	def apply[T](e: T) = empty.snoc(e)
+
+}
+
 case class QCons[T](f : List[T], r: List[T]) extends Queue[T]
 case class QEmpty[T]() extends Queue[T]

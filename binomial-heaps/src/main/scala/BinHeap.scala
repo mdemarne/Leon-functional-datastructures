@@ -9,8 +9,6 @@ import leon.collection._
  * @author Mathieu Demarne
  */
 
-//to use T : add a mapping from T to BigInt
-
 sealed abstract class BinHeap {
 
   def trees: List[Tree] = this match { case BHeap(ts) => ts }

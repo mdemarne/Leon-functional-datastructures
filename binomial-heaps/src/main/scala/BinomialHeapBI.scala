@@ -11,174 +11,134 @@ import leon.collection._
 
 //to use T : add a mapping from T to BigInt
 
-sealed abstract class BinomialHeapBI {
-	
-	/* Lower-level API */
+sealed abstract class BinHeap {
 
-	def isEmpty: Boolean = this match {
-		case BHList(Nil()) => true
-		case _ => false
-	}
-	def isDefined: Boolean = !this.isEmpty
+  def trees: List[Tree] = this match { case BHeap(ts) => ts }
 
-	def insert(x: BigInt): BinomialHeapBI = {
-		require(this.correctFormBH)
-		this.insTree(TreeNode(0, x, BHList(Nil())))
-	} ensuring (res => res.size == this.size + 1 && res.content == Set(x) ++ this.content && res.correctFormBH)
+  /* Lower-level API */
 
-	protected def insTree(t1: TreeBI): BinomialHeapBI = {//ts: this
-		require(this.correctFormBH && t1.correctFormTree)
-		this match {
-			case BHList(Nil()) => BHList(Cons(t1, Nil()))
-			case a @ BHList(Cons(t2, rest)) => {
-				if (t1.rank < t2.rank) BHList(Cons(t1, a.f))
-				else BHList(rest).insTree(t1.link(t2))
-			}
-		}
-	} ensuring (res => res.size == this.size + t1.size && res.content == this.content ++ t1.content && res.correctFormBH)
+  def isEmpty = this.trees.isEmpty
+  def isDefined = !this.isEmpty
 
-/*[  Info  ]  - Now considering 'precond. (call BHList($this.f.t).insTree(t1.link($ ...)' VC for BinomialHeapBI$insTree @35:38...
-[ Error  ]  => INVALID
-[ Error  ] Found counter-example:
-[ Error  ]   $this -> BHList(List[TreeBI](TreeNode(589, 1718, BHList(List[TreeBI]()))))
-[ Error  ]   t1    -> TreeNode(2241, 8855, BHList(List[TreeBI]()))
-[  Info  ]  - Now considering 'precond. (call t1.link($this.f.h))' VC for BinomialHeapBI$insTree @35:59...
-[ Error  ]  => INVALID
-[ Error  ] Found counter-example:
-[ Error  ]   $this -> BHList(List[TreeBI](TreeNode(9619, 1236, BHList(List[TreeBI]()))))
-[ Error  ]   t1    -> TreeNode(9620, 7719, BHList(List[TreeBI]()))
-*/
+  def insert(x: BigInt): BinHeap = {
+    require(this.hasProperShape)
+    val res: BinHeap = BHeap(Ops.insTree(this.trees, Tree(x)))
+    res
+  } ensuring (res => res.size == this.size + 1 && res.hasProperShape)
 
-	def merge(that: BinomialHeapBI): BinomialHeapBI = {
-		require(this.correctFormBH && this.correctFormBH)
-		(this, that) match {
-			case (BHList(t), BHList(Nil())) => BHList(t)
-			case (BHList(Nil()), BHList(t)) => BHList(t)
-			case (BHList(Cons(t1, ts1)), BHList(Cons(t2, ts2))) => {
-				if (t1.rank < t2.rank)  BHList(Cons(t1, 
-					(BHList(ts1).merge(that)) match { case BHList(f) => f }))
-				else if (t2.rank < t1.rank) BHList(Cons(t2, 
-					(this.merge(BHList(ts2))) match {case BHList(f) => f }))
-				else BHList(ts1).merge(BHList(ts2)).insTree(t1.link(t2))
-			}
-		}
-	} ensuring (res => res.size == this.size + that.size && res.content == this.content ++ that.content && res.correctFormBH)
+  def merge(that: BinHeap): BinHeap = {
+    require(this.hasProperShape && that.hasProperShape)
+    val res: BinHeap = BHeap(Ops.merge(this.trees, that.trees))
+    res
+  } ensuring (res => res.size == this.size + that.size && res.hasProperShape)
 
-	def findMin: BigInt = {
-		require(this.isDefined && this.correctFormBH)
-		this match {
-			case BHList(Cons(t, Nil())) => t.root
-			case BHList(Cons(t, ts)) => {
-				val x = t.root
-				val y = BHList(ts).findMin
-				if (x <= y) x else y
-			}
-		}
-	} ensuring(res => this.content.contains(res) && this.toList.forall(x => x >= res))
+  def findMin: BigInt = {
+    require(this.hasProperShape && this.isDefined)
+    val (n, _) = Ops.getMin(this.trees)
+    val res: BigInt = n.root
+    res
+  }
 
-	def deleteMin: BinomialHeapBI = {
-		require(this.isDefined && this.correctFormBH)
-		this.findAndDeleteMin._2
-	} ensuring (res => res.size == this.size - 1 && res.correctFormBH)
+  def deleteMin: BinHeap = {
+    require(this.hasProperShape && this.isDefined)
+    val (n, ts) = Ops.getMin(this.trees)
+    val res: BinHeap = BHeap(Ops.merge(ts.reverse, n.children))
+    res
+  } ensuring (res => res.size == this.size - 1 && res.hasProperShape)
 
-	def findAndDeleteMin: (BigInt, BinomialHeapBI) = {
-		require(this.isDefined && this.correctFormBH)
-		this.getMin match {
-			case (TreeNode(_, x, ts1), ts2) => 
-				(x, ts1.reverse.merge( BHList(ts2)))
-		}
-	} ensuring (res => res._2.size == this.size - 1 && res._2.correctFormBH)
+  def size: BigInt = {
+  	require(this.hasProperShape)
+  	val res: BigInt = Ops.size(this.trees)
+  	res
+  } ensuring(_ >= 0)
 
-	protected def getMin: (TreeBI, List[TreeBI]) = {
-		require(this.isDefined && this.correctFormBH)
-		this match {
-			case BHList(Cons(t, Nil())) => (t, Nil())
-			case BHList(Cons(t, ts)) => {
-				BHList(ts).getMin match {
-					case (tp, tsp) => {
-						if (t.root <= tp.root) (t, ts)
-						else (tp, Cons(t, tsp))
-					}
-				}
-			}
-		}
-	} ensuring(res => BHList(res._2).toList.forall(x => x >= res._1.root) && (res._1 :: res._2).forall(_.correctFormTree))
+  def content: Set[BigInt] = {
+    require(this.hasProperShape)
+    Ops.content(this.trees)
+  }
 
-	protected def reverse: BinomialHeapBI = {
-		require(this.correctFormBH)
-		this match {
-			case BHList(f) => BHList(f.reverse)
-		}
-	} ensuring (res => res.size == this.size && res.content == this.content && res.correctFormBH)
+  /* Helpers */
 
-	def size: BigInt = {
-		this match {
-			case BHList(Nil()) => 0
-			case BHList(f) => BinomialHeapBI.sumInList(f, 0)
-		}
-	} ensuring (_ >= 0)
-
-	/* Structure transformation */
-
-	def toList: List[BigInt] = {
-		require(this.correctFormBH)
-		this match {
-			case BHList(Nil()) => Nil()
-			case a @ BHList(f) => {
-				val (min, restBI) = a.findAndDeleteMin
-				Cons(min, restBI.toList)
-			}
-		}
-	} ensuring (_.size == this.size)
-
-	def content: Set[BigInt] = {
-		this match {
-			case BHList(Nil()) => Set()
-			case BHList(Cons(t, ts)) => t.content ++ BHList(ts).content
-		}
-	}
-	
-	def forall(func: TreeBI => Boolean): Boolean = this match {
-		case BHList(Nil()) => true
-		case BHList(Cons(t, ts)) => func(t) && BHList(ts).forall(func(_))
-	}
-	
-	/* Invariants */
-	
-	def correctFormBH: Boolean = this.minHeapPropBH && this.uniqueRanks
-	
-	def minHeapPropBH: Boolean = this.forall(_.minHeapPropTree)
-	
-	//There can only be either one or zero binomial trees for each order, 
-	//including zero order.
-	//And ranks are >= 0
-	def uniqueRanks: Boolean = this match {
-		case BHList(Nil()) => true
-		case BHList(f) => {
-			val ranks = f.map(_.rank)
-			ranks.forall(x => !ranks.--(List(x)).contains(x)) && ranks.forall(_ >= 0) && f.forall(_.uniqueRankTree)
-		}
-	}
-
+  private def hasProperShape = Ops.hasProperShape(this.trees)
 }
 
 /* Companion object */
-object BinomialHeapBI {
+object BinHeap {
 
-	/* Lower-level API */
+  /* lower-leve API */
 
-	def empty = BHList(Nil[TreeBI]())
-	
-	/* Helpers */
-
-	private def sumInList[T](lst: List[TreeBI], acc: BigInt): BigInt = {
-		require(acc >= 0)
-		lst match {
-			case Nil() => acc
-			case Cons(h, t) => sumInList(t, acc + h.size)
-		}
-	} ensuring(_ >= 0)
-	
+  def empty = BHeap(Nil[Tree]())
 }
 
-case class BHList(f : List[TreeBI]) extends BinomialHeapBI
+/* NOTE: contains list-based functions, since implicit classes are not supported by Leon */
+object Ops {
+
+  /* Invariants */
+
+  def hasProperShape(c: List[Tree]): Boolean = hasMinHeapProp(c) && hasIncrRanks(c)
+
+  /* Each binomial tree in a heap obeys the minimum-heap property: The key of a node is greater than or equal to the key of its parent. */
+  def hasMinHeapProp(c: List[Tree]): Boolean = c.forall(_.hasProperShape)
+
+  def hasIncrRanks(c: List[Tree]): Boolean = c match {
+    case Nil() => true
+    case Cons(_, Nil()) => true
+    case Cons(t1, ts @ Cons(t2, _)) => t1.rank == t2.rank - 1 && hasIncrRanks(ts)
+  }
+
+  /* Helpers */
+
+  def merge(lhs: List[Tree], rhs: List[Tree]): List[Tree] = {
+    require(hasProperShape(lhs) && hasProperShape(rhs))
+    val res: List[Tree] = (lhs, rhs) match {
+      case (t, Nil()) => t
+      case (Nil(), t) => t
+      case (Cons(t1, ts1), Cons(t2, ts2)) if t1.rank < t2.rank => t1 :: merge(ts1, t2 :: ts2)
+      case (Cons(t1, ts1), Cons(t2, ts2)) if t1.rank > t2.rank => t2 :: merge(t1 :: ts1, ts2)
+      case (Cons(t1, ts1), Cons(t2, ts2)) if t1.rank == t2.rank => insTree(merge(ts1, ts2), t1 link t2)
+    }
+    res
+  } ensuring (res => hasProperShape(res))
+
+  def insTree(lhs: List[Tree], t1: Tree): List[Tree] = {
+    require(hasProperShape(lhs) && t1.hasProperShape)
+    val res: List[Tree] = lhs match {
+      case Nil() => t1 :: Nil()
+      case Cons(t2, ts) if t1.rank < t2.rank => t1 :: t2 :: ts
+      case Cons(t2, ts) if t1.rank == t2.rank => insTree(ts, t1 link t2)
+      // TODO: checkout why it does not resolve to above and does not match exhaustiveness
+    }
+    res
+  } ensuring (res => hasProperShape(res))
+
+  def getMin(lhs: List[Tree]): (Tree, List[Tree]) = {
+    require(!lhs.isEmpty && hasProperShape(lhs))
+    lhs match {
+      case Cons(t, Nil()) => (t, Nil())
+      case Cons(t, ts) =>
+        getMin(ts) match {
+          case (tp, tsp) if t.root <= tp.root => (t, ts)
+          case (tp, tsp) => (tp, t :: tsp)
+        }
+    }
+  } ensuring (res => res._1.hasProperShape && hasMinHeapProp(res._2))
+
+  def size(lhs: List[Tree]): BigInt = {
+  	require(hasProperShape(lhs))
+  	val res: BigInt = lhs match {
+  		case Nil() => 0
+  		case Cons(t, ts) => t.size + size(ts)
+  	}
+  	res
+  } ensuring(_ >= 0)
+
+  def content(lhs: List[Tree]): Set[BigInt] = {
+    require(hasProperShape(lhs))
+    lhs match {
+      case Nil() => Set()
+      case Cons(t, ts) => t.content ++ content(ts)
+    }
+  }
+}
+
+case class BHeap(ts: List[Tree]) extends BinHeap

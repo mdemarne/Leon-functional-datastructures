@@ -66,6 +66,7 @@ object BinHeap {
   /* lower-leve API */
 
   def empty = BHeap(Nil[Tree]())
+  def apply(elem: Int) = empty.insert(elem)
 }
 
 /* NOTE: contains list-based functions, since implicit classes are not supported by Leon */
@@ -84,6 +85,7 @@ object Ops {
     case Cons(t1, ts @ Cons(t2, _)) => t1.rank >= 0 && t1.rank == t2.rank - 1 && hasIncrRanks(ts)
   }
   
+  /* Intermediate shape that need to be verified for InsTree, since it follow specific constraints in term of rank. */
   def hasInsTreeProperShape(lhs: List[Tree], t1: Tree): Boolean = {
 	hasProperShape(lhs) && t1.hasProperShape && {
 		lhs match {

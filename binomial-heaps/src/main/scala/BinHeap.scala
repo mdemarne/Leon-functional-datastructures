@@ -66,7 +66,7 @@ object BinHeap {
   /* lower-leve API */
 
   def empty = BHeap(Nil[Tree]())
-  def apply(elem: Int) = empty.insert(elem)
+  def apply(v: BigInt): BinHeap = empty.insert(v)
 }
 
 /* NOTE: contains list-based functions, since implicit classes are not supported by Leon */

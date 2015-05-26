@@ -84,7 +84,7 @@ object Ops {
     case Cons(t1, ts @ Cons(t2, _)) => t1.rank >= 0 && t1.rank == t2.rank - 1 && hasIncrRanks(ts)
   }
   
-  def insTreeProperShape(lhs: List[Tree], t1: Tree): Boolean = {
+  def hasInsTreeProperShape(lhs: List[Tree], t1: Tree): Boolean = {
 	hasProperShape(lhs) && t1.hasProperShape && {
 		lhs match {
 			case Nil() => true
@@ -109,12 +109,11 @@ object Ops {
   } ensuring (res => hasProperShape(res))
 
   def insTree(lhs: List[Tree], t1: Tree): List[Tree] = {
-    require(insTreeProperShape(lhs, t1))
+    require(hasInsTreeProperShape(lhs, t1))
     val res: List[Tree] = lhs match {
       case Nil() => t1 :: Nil()
       case Cons(t2, ts) if t1.rank < t2.rank => t1 :: t2 :: ts
       case Cons(t2, ts) => insTree(ts, t1 link t2)
-      // TODO: checkout why it does not resolve to above and does not match exhaustiveness
     }
     res
   } ensuring (res => hasProperShape(res))

@@ -6,3 +6,6 @@
 *.classpath
 *.project
 *.gz
+*.aux
+*.log
+*.pdf

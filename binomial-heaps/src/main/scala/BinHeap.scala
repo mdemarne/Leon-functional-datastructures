@@ -45,10 +45,10 @@ sealed abstract class BinHeap {
   } ensuring (res => res.size == this.size - 1 && res.hasProperShape)
 
   def size: BigInt = {
-  	require(this.hasProperShape)
-  	val res: BigInt = Ops.size(this.trees)
-  	res
-  } ensuring(_ >= 0)
+    require(this.hasProperShape)
+    val res: BigInt = Ops.size(this.trees)
+    res
+  } ensuring (_ >= 0)
 
   def content: Set[BigInt] = {
     require(this.hasProperShape)
@@ -84,16 +84,17 @@ object Ops {
     case Cons(t, Nil()) => t.rank >= 0
     case Cons(t1, ts @ Cons(t2, _)) => t1.rank >= 0 && t1.rank == t2.rank - 1 && hasIncrRanks(ts)
   }
-  
+
   /* Intermediate shape that need to be verified for InsTree, since it follow specific constraints in term of rank. */
   def hasInsTreeProperShape(lhs: List[Tree], t1: Tree): Boolean = {
-	hasProperShape(lhs) && t1.hasProperShape && {
-		lhs match {
-			case Nil() => true
-			case Cons(t2, ts) if t1.rank < t2.rank || t1.rank == t2.rank => true
-			case _ => false
-		}
-	}
+    val check1: Boolean = hasProperShape(lhs) && t1.hasProperShape
+    val check2: Boolean = lhs match {
+        case Nil() => true
+        case Cons(t2, ts) if t1.rank < t2.rank || t1.rank == t2.rank => true
+        case _ => false
+      }
+    val check: Boolean = check1 && check2
+    check
   }
 
   /* Helpers */
@@ -133,13 +134,13 @@ object Ops {
   } ensuring (res => res._1.hasProperShape && hasMinHeapProp(res._2))
 
   def size(lhs: List[Tree]): BigInt = {
-  	require(hasProperShape(lhs))
-  	val res: BigInt = lhs match {
-  		case Nil() => 0
-  		case Cons(t, ts) => t.size + size(ts)
-  	}
-  	res
-  } ensuring(_ >= 0)
+    require(hasProperShape(lhs))
+    val res: BigInt = lhs match {
+      case Nil() => 0
+      case Cons(t, ts) => t.size + size(ts)
+    }
+    res
+  } ensuring (_ >= 0)
 
   def content(lhs: List[Tree]): Set[BigInt] = {
     require(hasProperShape(lhs))

@@ -10,7 +10,6 @@ import leon.collection.ListOps._
  * @author Mathieu Demarne
  */
 
- // TODO: check if it would be nice to have intermediate parameterized tests.
 object QueueSpec {
 
   def testSnoc {

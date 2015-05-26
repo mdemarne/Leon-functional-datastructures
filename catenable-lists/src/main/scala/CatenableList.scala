@@ -122,7 +122,7 @@ sealed abstract class CatenableList[T] {
 	private def link(that: CatenableList[T]): CatenableList[T] = {
 		require(this.isDefined && this.hasProperShape && that.isDefined && that.hasProperShape)
 		this match {
-			case CCons(h, t) => CCons(h, t.snoc(that)) // TODO : p96 : "tree suspension"
+			case CCons(h, t) => CCons(h, t.snoc(that))
 		}
 	} ensuring(res => res.content == this.content ++ that.content && res.size == this.size + that.size)
 

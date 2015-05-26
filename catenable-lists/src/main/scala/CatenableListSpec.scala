@@ -10,8 +10,7 @@ import leon.collection.ListOps._
  * @author Mathieu Demarne
  */
 
- // TODO: check if it would be nice to have intermediate parameterized tests.
-object CatenableListSpec {
+ object CatenableListSpec {
 
   def testSnocCons {
       val l0 = CEmpty[BigInt]()
@@ -35,8 +34,6 @@ object CatenableListSpec {
       assert(lt3.size == 10)
   }
 
-  // TODO: check why this is unkown, it does not take any parameter and should therefore be
-  // executed.
   def testHeadAndTail {
   	val l1 = CEmpty[BigInt]().snoc(3).snoc(4).cons(2).snoc(5).snoc(6).cons(1)
   	val l2 = l1 ++ CEmpty[BigInt]().snoc(8).cons(7)
@@ -45,9 +42,9 @@ object CatenableListSpec {
   	assert(l3.size == 10)
   	assert(l3.head == -1)
     val ll3 = l3.tail
-  	//assert(l3.tail.head == 0)
-  	//assert(l3.tail.tail.head == 1)
-  	//assert(l3.tail.tail.tail.tail.tail.tail.head == 5)
+  	assert(l3.tail.head == 0)
+  	assert(l3.tail.tail.head == 1)
+  	assert(l3.tail.tail.tail.tail.tail.tail.head == 5)
   }
 
   def testTail {

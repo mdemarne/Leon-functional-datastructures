@@ -12,6 +12,19 @@ import leon.collection.ListOps._
 
 // NOTE: Compile with SCALAC, not LEON
 object CatenableListBenchmark extends App {
+
+  if (args.isEmpty) sys.error("The test to run should be passed to the benchmark")
+
+  args.head match {
+    case "consNormalList" =>
+    case "snocNormalList" =>
+    case "concatNormalList" =>
+    case "headNormalList" =>
+    case "consCatList" =>
+    case "snocCatList" =>
+    case "concatCatList" =>
+    case "headCatList" =>
+  }
   // TODO: use scalac for this one; might need to do changes in Leon for that
   // TODO: take an input parameter to run benchmarks (choose which one to run)
   // TODO: Have a test for: (list vs CatList)

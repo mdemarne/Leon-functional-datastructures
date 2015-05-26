@@ -97,7 +97,7 @@ sealed abstract class Queue[T] {
 	} ensuring (_.size == this.size)
 
 	// TODO: to use flatMap, we need to ensure that the queue returned by func has a proper shape. 
-	// Unfortunateyl, there is no way for now to do that properly using Leon.
+	// Unfortunately, there is no way for now to do that properly using Leon.
 	/*def flatMap[R](func: T => Queue[R]): Queue[R] =  {
 		require(this.hasProperShape)
 		val res: Queue[R] = this match {

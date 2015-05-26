@@ -139,6 +139,12 @@ sealed abstract class CatenableList[T] {
 /* Companion object */
 object CatenableList {
 
+	/* Lower-level API */
+
+	def empty[T] = CEmpty[T]()
+	// Ideally, this should be done using repeated, but it is not implemented in leon.
+	def apply[T](e: T) = empty.cons(e)
+
 	/* Helpers */
 
 	def linkAll[T](q: Queue[CatenableList[T]]): CatenableList[T] = {

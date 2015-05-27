@@ -62,9 +62,22 @@ object BinomialHeapBISpec {
 		Cons(Tree(0, 3, Nil()), Nil()))))
 	  , Nil()))
 	assert(b3.findMin == 0)
-    assert(b3.deleteMin.findMin == 1)
+	assert(b3.deleteMin.findMin == 1)
     assert(b3.deleteMin.deleteMin.findMin == 2)
-    //assert(b3.deleteMin.deleteMin.deleteMin.findMin == 3) //could reproduce the error
+    //b3.deleteMin.deleteMin.deleteMin //could reproduce the error
+    
+	val b2 = BinHeap( //should be b3.deleteMin
+		Cons(Tree(0, 3, Nil()), 
+		Cons(Tree(1, 2,
+			Cons(Tree(0, 4, Nil()), Nil())), 
+		Cons(Tree(2, 1, 
+			Cons(Tree(1, 5, 
+				Cons(Tree(0, 7, Nil()), Nil())), 
+			Cons(Tree(0, 6, Nil()), Nil()))), Nil()))))
+	assert(b2.findMin == 1)
+	assert(b2.deleteMin.findMin == 2)
+    //b2.deleteMin.deleteMin //could reproduce the error
+    
   }
 
   def testMerge {

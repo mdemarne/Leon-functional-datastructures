@@ -78,6 +78,37 @@ object BinomialHeapBISpec {
 	assert(b2.deleteMin.findMin == 2)
     //b2.deleteMin.deleteMin //could reproduce the error
     
+    val b1 = BinHeap(
+		Cons(Tree(1, 3, 
+			Cons(Tree(0, 6, Nil()), Nil())),
+		Cons(Tree(2, 2,
+			Cons(Tree(1, 5, 
+				Cons(Tree(0, 7, Nil()), Nil())), 
+			Cons(Tree(0, 4, Nil()), Nil()))), 
+		Nil())))
+    assert(b1.findMin == 2)
+    //b1.deleteMin //could reproduce the error
+    
+    //unrolling deleteMin
+    val (n, ts) = Ops.getMin(b1.trees)
+    //BinHeap(Ops.merge(n.children.reverse, ts)) //could reproduce the error
+    
+    val childList = Cons(Tree(1, 5, Cons(Tree(0, 7, Nil()), Nil())), 
+    Cons(Tree(0, 4, Nil()), Nil()))
+    //Ops.merge(childList.reverse, ts) //could reproduce the error
+    
+    
+    val revChildlist = Cons(Tree(0, 4, Nil()), Cons(Tree(1, 5, Cons(Tree(0, 7, Nil()), Nil())), Nil()))
+    //Ops.merge(revChildlist, ts) //could reproduce the error
+    val restTree = Cons(Tree(1, 3, 
+			Cons(Tree(0, 6, Nil()), Nil())), Nil())
+    
+    //unrolling Ops.merge, case t1.rank < t2.rank
+    //Tree(0, 4, Nil()) :: Ops.merge(Cons(Tree(1, 5, Cons(Tree(0, 7, Nil()), Nil())), Nil()), restTree) //does not reproduce the error !!
+    //gives that as result in the console, when at the end:
+    //List(Tree(0, 4, List[Tree]()), Tree(2, 3, List(Tree(1, 5, List(Tree(0, 7, List[Tree]()))), Tree(0, 6, List[Tree]()))))
+    val res1 = Cons(Tree(0, 4, Nil()), Cons(Tree(2, 3, Cons(Tree(1, 5, Cons(Tree(0, 7, Nil()), Nil())), Cons(Tree(0, 6, Nil()), Nil()))), Nil()))
+    assert(Ops.hasProperShape(res1))
   }
 
   def testMerge {

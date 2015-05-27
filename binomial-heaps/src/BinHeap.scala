@@ -40,7 +40,7 @@ case class BinHeap(trees: List[Tree]) {
     val (n, ts) = Ops.getMin(this.trees)
     val res: BinHeap = BinHeap(Ops.merge(ts.reverse, n.children))
     res
-  } ensuring (res => res.size == this.size - 1 && res.hasProperShape)
+  } ensuring (res => res.size == this.size - 1 && res.hasProperShape) // TODO: according to Specs, here res has NOT a proper shape
 
   def size: BigInt = {
     require(this.hasProperShape)
@@ -98,7 +98,7 @@ object Ops {
   /* Helpers */
 
   def merge(lhs: List[Tree], rhs: List[Tree]): List[Tree] = {
-    require(hasProperShape(lhs) && hasProperShape(rhs))
+    require(hasProperShape(lhs) && hasProperShape(rhs)) // TODO: the error might come from here, rhs at line 41 is not reversed from its original node.
     val res: List[Tree] = (lhs, rhs) match {
       case (t, Nil()) => t
       case (Nil(), t) => t

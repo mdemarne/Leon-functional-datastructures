@@ -23,7 +23,7 @@ object BinomialHeapBISpec {
     assert(b1.findMin == 0)
 
     val b2 = b1.deleteMin
-    /*assert(b2.size == 3)
+    assert(b2.size == 3)
     assert(b2.findMin == 2)
 
     val (e1, b3) = (b2.findMin, b2.deleteMin)
@@ -32,7 +32,7 @@ object BinomialHeapBISpec {
     assert(b3.findMin == 3)
 
     val b4 = b3.deleteMin.deleteMin
-    assert(b4.size == 0)*/
+    assert(b4.size == 0)
   }
 
   def testMerge {

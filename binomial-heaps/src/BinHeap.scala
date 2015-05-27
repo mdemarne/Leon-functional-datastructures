@@ -38,7 +38,7 @@ case class BinHeap(trees: List[Tree]) {
   def deleteMin: BinHeap = {
     require(this.hasProperShape && this.isDefined)
     val (n, ts) = Ops.getMin(this.trees)
-    val res: BinHeap = BinHeap(Ops.merge(ts.reverse, n.children))
+    val res: BinHeap = BinHeap(Ops.merge(n.children.reverse, ts))
     res
   } ensuring (res => res.size == this.size - 1 && res.hasProperShape) // TODO: according to Specs, here res has NOT a proper shape
 

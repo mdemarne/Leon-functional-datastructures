@@ -129,7 +129,7 @@ object Ops {
           case (tp, tsp) => (tp, t :: tsp)
         }
     }
-  } ensuring (res => res._1.hasProperShape && hasMinHeapProp(res._2))
+  } ensuring (res => res._1.hasProperShape && hasProperShape(res._2))
 
   def size(lhs: List[Tree]): BigInt = {
     require(hasProperShape(lhs))

@@ -80,7 +80,7 @@ object Ops {
   def hasIncrRanks(c: List[Tree]): Boolean = c match {
     case Nil() => true
     case Cons(t, Nil()) => t.rank >= 0
-    case Cons(t1, ts @ Cons(t2, _)) => t1.rank >= 0 && t1.rank == t2.rank - 1 && hasIncrRanks(ts)
+    case Cons(t1, ts @ Cons(t2, _)) => t1.rank >= 0 && t1.rank < t2.rank && hasIncrRanks(ts)
   }
 
   /* Intermediate shape that need to be verified for InsTree, since it follow specific constraints in term of rank. */

@@ -49,7 +49,7 @@ object BinomialHeapBISpec {
 	  , Nil()))
   }
   */
-  
+  /*
   def test {
 	  val b3 = BinHeap(Cons(
 	  Tree(3, 0, 
@@ -65,7 +65,7 @@ object BinomialHeapBISpec {
 	assert(b3.deleteMin.findMin == 1)
     assert(b3.deleteMin.deleteMin.findMin == 2)
     //b3.deleteMin.deleteMin.deleteMin //could reproduce the error
-    
+
 	val b2 = BinHeap( //should be b3.deleteMin
 		Cons(Tree(0, 3, Nil()), 
 		Cons(Tree(1, 2,
@@ -77,7 +77,7 @@ object BinomialHeapBISpec {
 	assert(b2.findMin == 1)
 	assert(b2.deleteMin.findMin == 2)
     //b2.deleteMin.deleteMin //could reproduce the error
-    
+
     val b1 = BinHeap(
 		Cons(Tree(1, 3, 
 			Cons(Tree(0, 6, Nil()), Nil())),
@@ -88,28 +88,38 @@ object BinomialHeapBISpec {
 		Nil())))
     assert(b1.findMin == 2)
     //b1.deleteMin //could reproduce the error
-    
+
     //unrolling deleteMin
     val (n, ts) = Ops.getMin(b1.trees)
     //BinHeap(Ops.merge(n.children.reverse, ts)) //could reproduce the error
-    
+
     val childList = Cons(Tree(1, 5, Cons(Tree(0, 7, Nil()), Nil())), 
     Cons(Tree(0, 4, Nil()), Nil()))
     //Ops.merge(childList.reverse, ts) //could reproduce the error
-    
-    
+
+
     val revChildlist = Cons(Tree(0, 4, Nil()), Cons(Tree(1, 5, Cons(Tree(0, 7, Nil()), Nil())), Nil()))
     //Ops.merge(revChildlist, ts) //could reproduce the error
     val restTree = Cons(Tree(1, 3, 
 			Cons(Tree(0, 6, Nil()), Nil())), Nil())
-    
+
     //unrolling Ops.merge, case t1.rank < t2.rank
     //Tree(0, 4, Nil()) :: Ops.merge(Cons(Tree(1, 5, Cons(Tree(0, 7, Nil()), Nil())), Nil()), restTree) //does not reproduce the error !!
-    //gives that as result in the console, when at the end:
+
+
+    //gives that as result in the console, when at the end, without error:
     //List(Tree(0, 4, List[Tree]()), Tree(2, 3, List(Tree(1, 5, List(Tree(0, 7, List[Tree]()))), Tree(0, 6, List[Tree]()))))
     val res1 = Cons(Tree(0, 4, Nil()), Cons(Tree(2, 3, Cons(Tree(1, 5, Cons(Tree(0, 7, Nil()), Nil())), Cons(Tree(0, 6, Nil()), Nil()))), Nil()))
-    assert(Ops.hasProperShape(res1))
-  }
+    //assert(Ops.hasProperShape(res1))
+    assert(Ops.hasMinHeapProp(res1))
+    assert(Ops.hasIncrRanks(res1)) //this one makes problem, in fact: ?!?
+
+
+    //result of the recursive call, which passes the postcondition
+    val partResRight = Cons(Tree(2, 3, Cons(Tree(1, 5, Cons(Tree(0, 7, Nil()), Nil())), Cons(Tree(0, 6, Nil()), Nil()))), Nil())
+    assert(Ops.hasProperShape(partResRight))
+
+  }*/
 
   def testMerge {
     val b1 = BinHeap.empty.insert(4).insert(2).insert(0).insert(3)
@@ -121,13 +131,13 @@ object BinomialHeapBISpec {
     assert(b3.findMin == 0)
     assert(b3.deleteMin.findMin == 1)
     assert(b3.deleteMin.deleteMin.findMin == 2)
-    //assert(b3.deleteMin.deleteMin.deleteMin.findMin == 3) //error here
-    /*assert(b3.deleteMin.deleteMin.deleteMin.deleteMin.findMin == 4)
+    assert(b3.deleteMin.deleteMin.deleteMin.findMin == 3)
+    assert(b3.deleteMin.deleteMin.deleteMin.deleteMin.findMin == 4)
     assert(b3.deleteMin.deleteMin.deleteMin.deleteMin.deleteMin.findMin == 5)
     assert(b3.deleteMin.deleteMin.deleteMin.deleteMin.deleteMin.deleteMin.findMin == 6)
     assert(b3.deleteMin.deleteMin.deleteMin.deleteMin.deleteMin.deleteMin.deleteMin.findMin == 7)
 
-    val b4 = b3.deleteMin.deleteMin
+    /*val b4 = b3.deleteMin.deleteMin
     val b5 = BinHeap.empty.insert(8).insert(9).insert(0).insert(10)
     val b6 = BinHeap.empty.insert(1).insert(12).insert(11).insert(13)
     val b7 = (b6 merge b5) merge b4

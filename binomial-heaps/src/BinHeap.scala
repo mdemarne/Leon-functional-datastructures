@@ -9,9 +9,7 @@ import leon.collection._
  * @author Mathieu Demarne
  */
 
-sealed abstract class BinHeap {
-
-  def trees: List[Tree] = this match { case BHeap(ts) => ts }
+case class BinHeap(trees: List[Tree]) {
 
   /* Lower-level API */
 
@@ -20,13 +18,13 @@ sealed abstract class BinHeap {
 
   def insert(x: BigInt): BinHeap = {
     require(this.hasProperShape)
-    val res: BinHeap = BHeap(Ops.insTree(this.trees, Tree(x)))
+    val res: BinHeap = BinHeap(Ops.insTree(this.trees, Tree(x)))
     res
   } ensuring (res => res.size == this.size + 1 && res.hasProperShape)
 
   def merge(that: BinHeap): BinHeap = {
     require(this.hasProperShape && that.hasProperShape)
-    val res: BinHeap = BHeap(Ops.merge(this.trees, that.trees))
+    val res: BinHeap = BinHeap(Ops.merge(this.trees, that.trees))
     res
   } ensuring (res => res.size == this.size + that.size && res.hasProperShape)
 
@@ -40,7 +38,7 @@ sealed abstract class BinHeap {
   def deleteMin: BinHeap = {
     require(this.hasProperShape && this.isDefined)
     val (n, ts) = Ops.getMin(this.trees)
-    val res: BinHeap = BHeap(Ops.merge(ts.reverse, n.children))
+    val res: BinHeap = BinHeap(Ops.merge(ts.reverse, n.children))
     res
   } ensuring (res => res.size == this.size - 1 && res.hasProperShape)
 
@@ -65,7 +63,7 @@ object BinHeap {
 
   /* lower-leve API */
 
-  def empty = BHeap(Nil[Tree]())
+  def empty = BinHeap(Nil[Tree]())
   def apply(v: BigInt): BinHeap = empty.insert(v)
 }
 
@@ -150,5 +148,3 @@ object Ops {
     }
   }
 }
-
-case class BHeap(ts: List[Tree]) extends BinHeap

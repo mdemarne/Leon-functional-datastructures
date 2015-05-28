@@ -51,7 +51,7 @@ object BinomialHeapBISpec {
     assert(b3.deleteMin.deleteMin.deleteMin.deleteMin.deleteMin.deleteMin.findMin == 6)
     assert(b3.deleteMin.deleteMin.deleteMin.deleteMin.deleteMin.deleteMin.deleteMin.findMin == 7)
 
-    /*val b4 = b3.deleteMin.deleteMin
+    val b4 = b3.deleteMin.deleteMin
     val b5 = BinHeap.empty.insert(8).insert(9).insert(0).insert(10)
     val b6 = BinHeap.empty.insert(1).insert(12).insert(11).insert(13)
     val b7 = (b6 merge b5) merge b4
@@ -59,7 +59,7 @@ object BinomialHeapBISpec {
 
     assert(b8.findMin == b7.findMin)
     assert(b8.deleteMin.findMin == b7.deleteMin.findMin)
-    assert(b8.deleteMin.deleteMin.findMin == b7.deleteMin.deleteMin.findMin)*/
+    assert(b8.deleteMin.deleteMin.findMin == b7.deleteMin.deleteMin.findMin)
   }
 
 }

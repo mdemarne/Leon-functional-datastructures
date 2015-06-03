@@ -153,7 +153,7 @@ object CatenableList {
 			case QEmpty() => q.head
 			case qTail => q.head.link(linkAll(qTail))
 		}
-	} ensuring(res => q.forall(_.forall(res.contains(_))))
+	} ensuring(res => queueOfCatToContent(q) == res.content)
 
 	def sumTail[T](q: Queue[CatenableList[T]]): BigInt = {
 		require(queueHasProperShapeIn(q))

@@ -10,7 +10,7 @@ Let us see first their implementation.
 \subsubsection{Trees Overview}
 A Tree is simply represented as a Node with an element 
 (the priority, of totally ordered type), a rank and a list of Trees as children.
-The rank is to be understood as follows:
+The rank, which is $\geq 0$, is to be understood as follows:
 a Node of rank $k$ has $k$ children of ranks $k$, $k-1$, ..., $0$,
 a rank $0$ meaning a Node without children.
 From that it comes that a Tree with a root Node of rank $k$ 
@@ -22,7 +22,8 @@ The Trees must satisfy the Minimum Heap Property,
 which means that the element of a parent Node 
 is less or equal than any of its children Node's elements.
 Also, in the implementation, the children list is maintained in decreasing order of rank.
-These properties are thus two invariants to check on Trees.
+These properties are thus two invariants to check on Trees,
+along with the domain of the rank.
 
 The \verb|link| operation on Trees takes two Trees of rank $k$, 
 makes the one with bigger root element the first child of the other,
@@ -34,7 +35,41 @@ The operation is done in constant time.
 Let us see now how the Trees are used in the Binomial Heap implementation.
 
 \subsubsection{Binomial Heaps Overview}
+A Binomial Heap is implemented as a list of Trees, 
+which is kept in increasing order of rank in the implementation.
+Also, there must not be more than one Tree of a particular rank.
+These properties are thus invariants to check.
+ 
+We can then visualise a well-formed Binomial Heap as the binary number of its size, 
+with the Trees in the list as the 1-valued bits of the number.
 
+With help of the \verb|link| operation on Trees, 
+we can see a \verb|merge| of two Binomial Heaps 
+as an addition of the two binary numbers that represent them.
+In this view, \verb|link| is used to add two bits of same position,
+and the result of the operation is the carry.
 
+The other operations on Binomial Heaps are \verb|insert|, \verb|findMin| and \verb|deleteMin|. 
+The \verb|insert| operation creates a 0-ranked Tree with the element to insert 
+and puts the Tree in the Heap, using an \verb|insertTree| function, 
+also used by \verb|merge| to insert the carry in the recursively merged Heaps,
+at each carry step.
+This function inserts the Tree only if its rank is $\leq$ to the smallest rank in the Tree list of the Heap 
+(either it adds it to the list, either it recursively \verb|link|s and \verb|insertTree|s),
+so it had to be checked that the function is not called with a Tree of bigger rank in the implementation.
+
+The \verb|findMin| operation needs only to look for the minimum element 
+in the root Nodes of the Trees in the Tree list.
+This is because the Trees satisfy the Minimum Heap Property.
+
+Finally, the \verb|deleteMin| operation finds the Tree with the minimum root in the list,
+removes its root 
+and reverses its children so that the children list is of the correct form for a Tree list of a Binomial Heap.
+After that, it \verb|merge|s this new Heap with the Heap composed of 
+the remaining Trees of the original Binomial Heap.
+
+All operation are done in amortized logarithmic time.
+Let us see now the verification of the implementations 
+for both Trees and Binomial Heaps with Leon.
 
 \subsection{Verification with Leon}

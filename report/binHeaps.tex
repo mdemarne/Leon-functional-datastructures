@@ -73,3 +73,26 @@ Let us see now the verification of the implementations
 for both Trees and Binomial Heaps with Leon.
 
 \subsection{Verification with Leon}
+As for the first data structure verification presented in this report,
+ \verb|size|, \verb|content| and \verb|toList| functions were used
+ for pre- and post-conditions of operations,
+as well as the invariants for Trees and Binomial Heaps we saw above.
+
+Some tests were written for the Binomial Heaps and 
+it helped to find some mistakes we made in writing the code and 
+which were not found by Leon.
+For example, an invariant was written too strong and 
+the error could be seen only with tests,
+when a precondition for an operation was not satisfied.
+
+We had some difficulties to state the total order of the elements' type
+(T $<:$ Ordered[T] was not understood by Leon), 
+so we decided to use BigInts to be able to verify the data structure.
+Also, we saw a limitation from Leon preventing us to have a nicer code, 
+with implicit classes, for example, even if probably tricky to implement in Leon.
+
+Leon could unfortunately not state as valid most of the operations, 
+which are still \verb|Unknown|s.
+
+%TODO
+%more ?

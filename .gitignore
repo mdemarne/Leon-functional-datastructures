@@ -10,3 +10,5 @@
 *.log
 *.pdf
 *.class
+*.bbl
+*.blg

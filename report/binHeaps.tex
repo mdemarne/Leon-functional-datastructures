@@ -1,10 +1,40 @@
-The implementation of Binomial Heaps we used can be found 
-in pages 68-72 of the reference book (\cite{Okasaki}).
+The implementation of Binomial Heaps we used, 
+along with the one of Trees, 
+can be found in pages 68-72 of the reference book (\cite{Okasaki}).
 
 \subsection{Data Structure Overview}
+A Binomial Heap is an implementation of mergeable (or meldable) priority queue.
+It uses Trees, so we had to implement them as well.
+Let us see first their implementation.
 
+\subsubsection{Trees Overview}
+A Tree is simply represented as a Node with an element 
+(the priority, of totally ordered type), a rank and a list of Trees as children.
+The rank is to be understood as follows:
+a Node of rank $k$ has $k$ children of ranks $k$, $k-1$, ..., $0$,
+a rank $0$ meaning a Node without children.
+From that it comes that a Tree with a root Node of rank $k$ 
+contains in total $2^k$ elements,
+so a Tree can represent a power of two, 
+like a bit in a binary number.
 
-\subsection{Implementation Details}
+The Trees must satisfy the Minimum Heap Property, 
+which means that the element of a parent Node 
+is less or equal than any of its children Node's elements.
+Also, in the implementation, the children list is maintained in decreasing order of rank.
+These properties are thus two invariants to check on Trees.
+
+The \verb|link| operation on Trees takes two Trees of rank $k$, 
+makes the one with bigger root element the first child of the other,
+so that both invariants are satisfied,
+and then returns the Tree, of rank $k+1$ now.
+It is thus like the addition of two bits of a binary number.
+The operation is done in constant time.
+
+Let us see now how the Trees are used in the Binomial Heap implementation.
+
+\subsubsection{Binomial Heaps Overview}
+
 
 
 \subsection{Verification with Leon}

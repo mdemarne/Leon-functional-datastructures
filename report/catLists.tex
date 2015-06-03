@@ -3,7 +3,7 @@ in pages 93-98 of the reference book (\cite{Okasaki}),
 and the implementation for Queues, needed for their implementation, 
 is described in pages 15-18 of the same book.
 
-\subsection{Data Structure Overview}
+\subsection{Data Structure Implementation Overview}
 The aim of the Catenable List data structure is 
 to have a List implementation with efficient concatenation, 
 hence its name.
@@ -57,6 +57,7 @@ In order to verify the correctness of implementations of both data structures in
 we used some functions like \verb|size|, \verb|content| and \verb|toList|.
 The Queue implementation had also an invariant to be checked (explained above),
 so the Catenable List implementation had to ensure that the Queues it uses 
+%and creates ? %TODO 
 satisfies the invariant as well.
 
 We also wrote some tests to be evaluated that helped us to find some errors,

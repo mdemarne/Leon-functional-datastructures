@@ -1,15 +1,14 @@
 The implementation of Catenable Lists we used can be found 
-in pages 93-98 of the reference book (\cite{Okasaki}),
+on pages 93-98 of the reference book (\cite{Okasaki}),
 and the implementation for Queues, needed for their implementation, 
-is described in pages 15-18 of the same book.
+is described on pages 15-18.
 
 \subsection{Data Structure Implementation Overview}
 The aim of the Catenable List data structure is 
 to have a List implementation with efficient concatenation, 
 hence its name.
-As said above, Catenable Lists are based on Queues in the implementation
-and for this reason, we had to implement them as well.
-Let us begin with the description of these ones.
+As said above, Catenable Lists are based on Queues
+and for this reason we had to implement them as well.
 
 \subsubsection{Queues Overview}
 The implementation represents a Queue as two lists (left and right), 
@@ -35,11 +34,16 @@ We can represent a Catenable List as a tree
 in which the order of elements can be recovered by traversing the tree in preorder.
 It is implemented as an element (the root of the tree), 
 and a Queue of Catenable Lists (its children).
+\\
+\centerline{\includegraphics[scale=0.17]{preorder}}
+\centerline{\emph{Illustration 1: representation of a list from a to t}}
+\centerline{}
+\\
 The concatenation is then simply done by adding the List we want to concatenate 
 at the end of the Queue of the current List 
 (operation called \verb|link|).
 When it comes to the other operations,
-the \verb|head| operation is trivial (it simply returns the root)
+\verb|head| is trivial (it simply returns the root)
 and operations adding an element at the end or beginning of the List, 
 \verb|snoc| and \verb|cons|,
 simply use the \verb|concatenation| operation.
@@ -49,11 +53,10 @@ For that, it just links all Lists of the Queue
 by putting the successor of a List $l$ in the Queue at the end of $l$'s Queue.
 
 All operations are done in amortized constant time.
-This is it for the implementation of the data structure,
-now let us see its verification with Leon.
+Let us now see its verification with Leon.
 
 \subsection{Verification with Leon}
-In order to verify the correctness of implementations of both data structures in Leon,
+In order to verify the correctness of the implementation of both data structures in Leon,
 we used some functions like \verb|size|, \verb|content| and \verb|toList|.
 The Queue implementation had also an invariant to be checked (explained above),
 so the Catenable List implementation had to ensure that the Queues it uses 
@@ -65,13 +68,17 @@ where we could not be precise enough in the specification of functions,
 or where Leon gave \verb|Unknown|s.
 
 The Queue implementation could be verified by Leon,
-but the Catenable List implementation had many \verb|Unknown|s,
-probably due to its recursive structure.
+but the Catenable List implementation had some \verb|Unknown|s,
+probably due to its recursive structure. Overall, we were able to verify 65 checks over 78.
 
 In the process of verification we learned some limitations of Leon,
-like with high-order functions.
+such as that the use of high-order functions makes verification hard if not impossible.
 We had also some difficulties with mutually recursive checks, 
 which made stack-overflows.
+
+In the process, we also managed to compile Leon code directly using \verb|scalac|, 
+which allowed us to test our implementation both using the \verb|--eval| option of
+Leon and as a standalone program.
 
 %TODO
 %: more ?

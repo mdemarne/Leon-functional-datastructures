@@ -16,9 +16,9 @@ a rank $0$ meaning a Node without children.
 From that it comes that a Tree with a root Node of rank $k$ 
 contains in total $2^k$ elements,
 so a Tree can represent a power of two, 
-like a bit in a binary number.
+like the \emph{k-th} bit in a binary number.
 
-The Trees must satisfy the Minimum Heap Property, 
+The Trees must satisfy the \emph{Minimum Heap Property}, 
 which means that the element of a parent Node 
 is less or equal than any of its children Node's elements.
 Also, in the implementation, the children list is maintained in decreasing order of rank.
@@ -26,24 +26,24 @@ These properties are thus two invariants to check on Trees,
 along with the domain of the rank.
 
 The \verb|link| operation on Trees takes two Trees of rank $k$, 
-makes the one with bigger root element the first child of the other,
-so that both invariants are satisfied,
-and then returns the Tree, of rank $k+1$ now.
+makes the one with bigger root element the first child of the other
+so that both invariants are satisfied.
+As a result, the returned tree is of rank $k+1$.
 It is thus like the addition of two bits of a binary number.
 The operation is done in constant time.
 
-Let us see now how the Trees are used in the Binomial Heap implementation.
+Let us now see how the Trees are used in the Binomial Heap implementation.
 
 \subsubsection{Binomial Heaps Overview}
-A Binomial Heap is implemented as a list of Trees, 
-which is kept in increasing order of rank in the implementation.
-Also, there must not be more than one Tree of a particular rank.
+A Binomial Heap is implemented as a list of Trees
+which is kept in increasing order of rank.
+There must also not be more than one Tree of a particular rank.
 These properties are thus invariants to check.
  
-We can then visualise a well-formed Binomial Heap as the binary number of its size, 
+We can then visualize a well-formed Binomial Heap as the binary number of its size, 
 with the Trees in the list as the 1-valued bits of the number.
 
-With help of the \verb|link| operation on Trees, 
+With the help of the \verb|link| operation on Trees, 
 we can see a \verb|merge| of two Binomial Heaps 
 as an addition of the two binary numbers that represent them.
 In this view, \verb|link| is used to add two bits of same position,
@@ -54,13 +54,13 @@ The \verb|insert| operation creates a 0-ranked Tree with the element to insert
 and puts the Tree in the Heap, using an \verb|insertTree| function, 
 also used by \verb|merge| to insert the carry in the recursively merged Heaps,
 at each carry step.
-This function inserts the Tree only if its rank is $\leq$ to the smallest rank in the Tree list of the Heap 
+This function inserts the Tree only if its rank is smaller or equal to the smallest rank in the Tree list of the Heap 
 (either it adds it to the list, either it recursively \verb|link|s and \verb|insertTree|s),
 so it had to be checked that the function is not called with a Tree of bigger rank in the implementation.
 
 The \verb|findMin| operation needs only to look for the minimum element 
 in the root Nodes of the Trees in the Tree list.
-This is because the Trees satisfy the Minimum Heap Property.
+This is because the Trees satisfy the \emph{Minimum Heap Property}.
 
 Finally, the \verb|deleteMin| operation finds the Tree with the minimum root in the list,
 removes its root 
@@ -78,21 +78,28 @@ As for the first data structure verification presented in this report,
  for pre- and post-conditions of operations,
 as well as the invariants for Trees and Binomial Heaps we saw above.
 
+Unfortunately we managed to prove only 46 properties over 53. 
+We have tried to tweak our model in order to help Leon proving some properties,
+but unfortunately the recursive structure of trees prevented us to reduce the number of \verb|unknown|s.
+
 Some tests were written for the Binomial Heaps and 
 it helped to find some mistakes we made in writing the code and 
 which were not found by Leon.
-For example, an invariant was written too strong and 
+For example, an invariant was too strong regarding the ordering of the trees in the heap and 
 the error could be seen only with tests,
 when a precondition for an operation was not satisfied.
 
 We had some difficulties to state the total order of the elements' type
-(T $<:$ Ordered[T] was not understood by Leon), 
-so we decided to use BigInts to be able to verify the data structure.
-Also, we saw a limitation from Leon preventing us to have a nicer code, 
-with implicit classes, for example, even if probably tricky to implement in Leon.
+(\texttt{T <: Ordered[T]}) was not understood by Leon), 
+so we decided to use \verb|BigInt|s to be able to verify the data structure.
+We also had to adapt a bit our implementation in order to circumvent some of Leon's limitations.
+For instance, Heaps are represented as \texttt{List[Tree]}. It could therefore have been interested to use an implicit class to operate on such structure, a construct that is not yet available in Leon.
 
-Leon could unfortunately not state as valid most of the operations, 
+Moreover, our data structures used standard constructs such as lists, but with some specific properties. In order to enforce those properties, we had to verify the invariants as \texttt{require}s at the beginning of each \texttt{def}. It would have been nice instead to be able to write requirements directly inside \texttt{case classes}, as it would have remove some boilerplate code.
+
+Leon could unfortunately not state as valid most of complicated, crucial operations, 
 which are still \verb|Unknown|s.
 
 %TODO
 %more ?
+%MAT: I think it is OK like that. For a more detailed explanation the paper or our implementation on github will suffice.

@@ -80,26 +80,29 @@ as well as the invariants for Trees and Binomial Heaps we saw above.
 
 Unfortunately we managed to prove only 46 properties over 53. 
 We have tried to tweak our model in order to help Leon proving some properties,
-but unfortunately the recursive structure of trees prevented us to reduce the number of \verb|unknown|s.
+but unfortunately the recursive structure of Trees prevented us to reduce the number of \verb|Unknown|s.
 
 Some tests were written for the Binomial Heaps and 
 it helped to find some mistakes we made in writing the code and 
 which were not found by Leon.
-For example, an invariant was too strong regarding the ordering of the trees in the heap and 
+For example, an invariant was too strong regarding the ordering of the Trees in the Heap and 
 the error could be seen only with tests,
 when a precondition for an operation was not satisfied.
 
 We had some difficulties to state the total order of the elements' type
-(\texttt{T <: Ordered[T]}) was not understood by Leon), 
+(\texttt{T <: Ordered[T]} was not understood by Leon), 
 so we decided to use \verb|BigInt|s to be able to verify the data structure.
 We also had to adapt a bit our implementation in order to circumvent some of Leon's limitations.
-For instance, Heaps are represented as \texttt{List[Tree]}. It could therefore have been interested to use an implicit class to operate on such structure, a construct that is not yet available in Leon.
+For instance, Heaps are represented as \texttt{List[Tree]}. 
+It could therefore have been interested to use an implicit class to operate on such structure, 
+a construct that is not yet available in Leon.
 
-Moreover, our data structures used standard constructs such as lists, but with some specific properties. In order to enforce those properties, we had to verify the invariants as \texttt{require}s at the beginning of each \texttt{def}. It would have been nice instead to be able to write requirements directly inside \texttt{case classes}, as it would have remove some boilerplate code.
+Moreover, our data structures used standard constructs such as lists, 
+but with some specific properties. 
+In order to enforce those properties, 
+we had to verify the invariants as \texttt{require}s at the beginning of each \texttt{def}. 
+It would have been nice instead to be able to write requirements directly inside \texttt{case classes}, 
+as it would have remove some boilerplate code.
 
 Leon could unfortunately not state as valid most of complicated, crucial operations, 
 which are still \verb|Unknown|s.
-
-%TODO
-%more ?
-%MAT: I think it is OK like that. For a more detailed explanation the paper or our implementation on github will suffice.

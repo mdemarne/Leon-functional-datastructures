@@ -1,11 +1,11 @@
 The implementation of Binomial Heaps we used, 
-along with the one of Trees, 
+along with Trees, 
 can be found in pages 68-72 of the reference book (\cite{Okasaki}).
 
 \subsection{Data Structure Overview}
 A Binomial Heap is an implementation of mergeable (or meldable) priority queue.
-It uses Trees, so we had to implement them as well.
-Let us see first their implementation.
+It uses Trees that we had to implement as well.
+Let us first see their implementation.
 
 \subsubsection{Trees Overview}
 A Tree is simply represented as a Node with an element 
@@ -41,7 +41,7 @@ There must also not be more than one Tree of a particular rank.
 These properties are thus invariants to check.
  
 We can then visualize a well-formed Binomial Heap as the binary number of its size, 
-with the Trees in the list as the 1-valued bits of the number.
+with the Trees in the list as the $1$-valued bits of the number.
 
 With the help of the \verb|link| operation on Trees, 
 we can see a \verb|merge| of two Binomial Heaps 
@@ -50,7 +50,7 @@ In this view, \verb|link| is used to add two bits of same position,
 and the result of the operation is the carry.
 
 The other operations on Binomial Heaps are \verb|insert|, \verb|findMin| and \verb|deleteMin|. 
-The \verb|insert| operation creates a 0-ranked Tree with the element to insert 
+The \verb|insert| operation creates a $0$-ranked Tree with the element to insert 
 and puts the Tree in the Heap, using an \verb|insertTree| function, 
 also used by \verb|merge| to insert the carry in the recursively merged Heaps,
 at each carry step.
@@ -79,7 +79,7 @@ As for the first data structure verification presented in this report,
 as well as the invariants for Trees and Binomial Heaps we saw above.
 
 Unfortunately we managed to prove only 46 properties over 53. 
-We have tried to tweak our model in order to help Leon proving some properties,
+We have tried to tweak our model in order to help Leon proving some of them,
 but unfortunately the recursive structure of Trees prevented us to reduce the number of \verb|Unknown|s.
 
 Some tests were written for the Binomial Heaps and 
@@ -91,9 +91,10 @@ when a precondition for an operation was not satisfied.
 
 We had some difficulties to state the total order of the elements' type
 (\texttt{T <: Ordered[T]} was not understood by Leon), 
-so we decided to use \verb|BigInt|s to be able to verify the data structure.
+so we decided to use \verb|BigInt|s to be able to verify the data structure,
+as it can be done without loss of generality regarding the logic of the implementation.
 We also had to adapt a bit our implementation in order to circumvent some of Leon's limitations.
-For instance, Heaps are represented as \texttt{List[Tree]}. 
+For instance, a Heap is represented as a \texttt{List[Tree]}. 
 It could therefore have been interested to use an implicit class to operate on such structure, 
 a construct that is not yet available in Leon.
 
@@ -101,7 +102,7 @@ Moreover, our data structures used standard constructs such as lists,
 but with some specific properties. 
 In order to enforce those properties, 
 we had to verify the invariants as \texttt{require}s at the beginning of each \texttt{def}. 
-It would have been nice instead to be able to write requirements directly inside \texttt{case classes}, 
+It would have been nice instead to be able to write requirements directly inside \texttt{case class}es, 
 as it would have remove some boilerplate code.
 
 Leon could unfortunately not state as valid most of complicated, crucial operations, 

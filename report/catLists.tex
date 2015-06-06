@@ -1,6 +1,7 @@
 The implementation of Catenable Lists we used can be found 
 on pages 93-98 of the reference book (\cite{Okasaki}),
-and the implementation for Queues, needed for their implementation, 
+and the implementation for Queues, 
+which are used internally by the lists, 
 is described on pages 15-18.
 
 \subsection{Data Structure Implementation Overview}
@@ -51,7 +52,11 @@ The \verb|tail| operation requires
 to create a Catenable List from a Queue of Catenable Lists.
 For that, it just links all Lists of the Queue 
 by putting the successor of a List $l$ in the Queue at the end of $l$'s Queue.
-
+\\
+\centerline{\includegraphics[scale=0.17]{link}}
+\centerline{\emph{Illustration 2: overview of the \texttt{tail} operation}}
+\centerline{}
+\\
 All operations are done in amortized constant time.
 Let us now see its verification with Leon.
 
@@ -60,7 +65,7 @@ In order to verify the correctness of the implementation of both data structures
 we used some functions like \verb|size|, \verb|content| and \verb|toList|.
 The Queue implementation had also an invariant to be checked (explained above),
 so the Catenable List implementation had to ensure that the Queues it uses 
-satisfies the invariant as well.
+satisfy the invariant as well.
 
 We also wrote some tests to be evaluated that helped us to find some errors,
 where we could not be precise enough in the specification of functions,
@@ -73,8 +78,8 @@ probably due to its recursive structure. Overall, we were able to verify 67 chec
 In the process of verification we learned some limitations of Leon,
 such as that the use of high-order functions makes verification hard if not impossible.
 We had also some difficulties with mutually recursive checks, 
-which made stack-overflows.
+which generated stack-overflows at run-time.
 
 In the process, we also managed to compile Leon code directly using \verb|scalac|, 
 which allowed us to test our implementation both using the \verb|--eval| option of
-Leon and as a standalone program.
+Leon and as a standalone program \footnote{See \href{https://stackoverflow.com/questions/29990106/how-do-i-build-with-scalac-using-leons-library}{stackoverflow.com/questions/29990106/how-do-i-build-with-scalac-using-leons-library}}.

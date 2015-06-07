@@ -16,7 +16,7 @@ For details, please check out:
 - [Our presentation slides](https://github.com/mdemarne/leon-functional-datastructures/blob/master/presentation/presentation.pdf)
 - [Our report on the implementation](https://github.com/mdemarne/leon-functional-datastructures/blob/master/report/report.pdf)
  
-## Running The Prroject
+## Running The Project
 
 In order to run the various tests, you can:
 
